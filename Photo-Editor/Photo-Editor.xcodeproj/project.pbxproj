@@ -19,6 +19,7 @@
 		EBE857412CC5CDC000E862B2 /* MemorabiliaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857402CC5CDC000E862B2 /* MemorabiliaView.swift */; };
 		EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857422CC5CED000E862B2 /* TrashView.swift */; };
 		EBE857452CC5CF0B00E862B2 /* PlaceHolderImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */; };
+		EBE857472CC61E3800E862B2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		EBE857402CC5CDC000E862B2 /* MemorabiliaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorabiliaView.swift; sourceTree = "<group>"; };
 		EBE857422CC5CED000E862B2 /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
 		EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolderImageView.swift; sourceTree = "<group>"; };
+		EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 				EB7331592CC5AF7400680F9F /* Views */,
 				EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */,
 				EBDD479E2CB884AD001823C6 /* Assets.xcassets */,
+				EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */,
 				EBDD47A02CB884AD001823C6 /* Preview Content */,
 			);
 			path = "Photo-Editor";
@@ -173,6 +176,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBE857472CC61E3800E862B2 /* Launch Screen.storyboard in Resources */,
 				EBDD47A22CB884AD001823C6 /* Preview Assets.xcassets in Resources */,
 				EBDD479F2CB884AD001823C6 /* Assets.xcassets in Resources */,
 			);
@@ -331,10 +335,11 @@
 				DEVELOPMENT_TEAM = Q2K3P7N954;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Photo Lab";
+				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -361,10 +366,11 @@
 				DEVELOPMENT_TEAM = Q2K3P7N954;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Photo Lab";
+				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
