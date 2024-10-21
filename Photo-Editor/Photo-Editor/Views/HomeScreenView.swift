@@ -17,8 +17,8 @@ struct HomeScreenView: View {
                     Spacer()
                     HomeLibrary()
                 }
-                .navigationTitle("Bwomp")
-
+                .navigationTitle("Choose an image")
+                .navigationBarTitleDisplayMode(.inline)
             }
         }
 

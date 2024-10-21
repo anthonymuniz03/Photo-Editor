@@ -9,10 +9,30 @@ import SwiftUI
 
 struct GalleryView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            List {
+                NavigationLink(destination: MemorabiliaView()) {
+                    Text("Memorabilia")
+                }
+                
+                Section {
+                    Button(action: {
+                        print("Add new gallery tapped")
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle")
+                            Text("Add New Gallery")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Gallery")
+            .listStyle(InsetGroupedListStyle())
+        }
     }
 }
 
 #Preview {
     GalleryView()
 }
+

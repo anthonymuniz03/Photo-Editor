@@ -17,17 +17,17 @@ struct ContentView: View {
                         Label("Home", systemImage: "house")
                     }
                 
-                Text("Gallery")
+                GalleryView()
                     .tabItem {
                         Label("Gallery", systemImage: "photo")
                     }
                 
-                Text("Trash")
+                TrashView()
                     .tabItem {
                         Label("Trash", systemImage: "trash")
                     }
                 
-                Text("Settings")
+                SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gearshape")
                     }

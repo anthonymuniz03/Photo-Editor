@@ -15,24 +15,10 @@ struct HomeLibrary: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 20) {
             ForEach(0..<15) { _ in
-                PlaceholderImageView()
+                PlaceHolderImageView()
             }
         }
         .padding()
-    }
-}
-
-struct PlaceholderImageView: View {
-    var body: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.3))
-            .frame(height: 100)
-            .overlay(
-                Text("Image")
-                    .foregroundColor(.black)
-                    .font(.caption)
-            )
-            .cornerRadius(10)
     }
 }
 
