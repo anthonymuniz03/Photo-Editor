@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeScreenView: View {
     @State private var recentImages: [UIImage] = []
+    @State private var selectedImage: UIImage?
+    @State private var isEditImageViewActive = false
 
     var body: some View {
         NavigationStack {
@@ -16,16 +18,20 @@ struct HomeScreenView: View {
                 ScrollView {
                     MainButton(recentImages: $recentImages)
                     Spacer()
-                    HomeLibrary(recentImages: recentImages)
+                    HomeLibrary(recentImages: recentImages, onImageTap: { image in
+                        selectedImage = image
+                        isEditImageViewActive = true
+                    })
                 }
                 .navigationTitle("Choose an image")
                 .navigationBarTitleDisplayMode(.inline)
-            }
-        }
-        .onChange(of: recentImages) { newImages in
-            print("Recent images updated, total count: \(newImages.count)")
-            newImages.enumerated().forEach { index, image in
-                print("Image at index \(index): \(image)")
+
+                NavigationLink(
+                    destination: EditImageView(image: selectedImage ?? UIImage()),
+                    isActive: $isEditImageViewActive
+                ) {
+                    EmptyView()
+                }
             }
         }
     }

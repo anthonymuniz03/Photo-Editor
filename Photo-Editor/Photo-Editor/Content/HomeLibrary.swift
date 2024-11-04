@@ -12,6 +12,7 @@ struct HomeLibrary: View {
         GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())
     ]
     var recentImages: [UIImage]
+    var onImageTap: (UIImage) -> Void
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 20) {
@@ -23,6 +24,9 @@ struct HomeLibrary: View {
                         .frame(width: 100, height: 100)
                         .cornerRadius(10)
                         .clipped()
+                        .onTapGesture {
+                            onImageTap(recentImages[index])
+                        }
                 } else {
                     PlaceHolderImageView()
                 }
@@ -33,5 +37,5 @@ struct HomeLibrary: View {
 }
 
 #Preview {
-    HomeLibrary(recentImages: [UIImage(named: "placeholder")!])
+    HomeLibrary(recentImages: [UIImage(named: "placeholder")!], onImageTap: { _ in })
 }
