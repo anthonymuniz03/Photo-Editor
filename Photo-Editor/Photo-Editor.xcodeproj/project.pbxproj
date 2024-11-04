@@ -10,6 +10,8 @@
 		EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */; };
 		EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315E2CC5BBA100680F9F /* GalleryView.swift */; };
 		EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */; };
+		EB84AD362CD86F5300B9CA3F /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */; };
+		EB84AD382CD872B700B9CA3F /* EditImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD372CD872B700B9CA3F /* EditImageView.swift */; };
 		EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */; };
 		EBDD479D2CB884A2001823C6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD479C2CB884A2001823C6 /* ContentView.swift */; };
 		EBDD479F2CB884AD001823C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBDD479E2CB884AD001823C6 /* Assets.xcassets */; };
@@ -26,6 +28,8 @@
 		EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
 		EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLibrary.swift; sourceTree = "<group>"; };
 		EB73315E2CC5BBA100680F9F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
+		EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
+		EB84AD372CD872B700B9CA3F /* EditImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageView.swift; sourceTree = "<group>"; };
 		EBDD47972CB884A2001823C6 /* Photo-Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo-Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo_EditorApp.swift; sourceTree = "<group>"; };
 		EBDD479C2CB884A2001823C6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +62,7 @@
 				EB73315E2CC5BBA100680F9F /* GalleryView.swift */,
 				EBE8573D2CC5C8E400E862B2 /* SettingsView.swift */,
 				EBE857422CC5CED000E862B2 /* TrashView.swift */,
+				EB84AD372CD872B700B9CA3F /* EditImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -68,6 +73,7 @@
 				EBDD47A82CBC8C59001823C6 /* MainButton.swift */,
 				EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */,
 				EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */,
+				EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -190,6 +196,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBE8573E2CC5C8E400E862B2 /* SettingsView.swift in Sources */,
+				EB84AD362CD86F5300B9CA3F /* PhotoPicker.swift in Sources */,
+				EB84AD382CD872B700B9CA3F /* EditImageView.swift in Sources */,
 				EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */,
 				EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */,
 				EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */,
@@ -336,6 +344,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you select images";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -367,6 +376,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you select images";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -8,22 +8,22 @@
 import SwiftUI
 
 struct HomeScreenView: View {
+    @State private var lastViewedImage: UIImage?
+
     var body: some View {
         NavigationStack {
             VStack {
                 ScrollView {
-                    
-                    MainButton()
+                    MainButton(lastViewedImage: $lastViewedImage)
                     Spacer()
-                    HomeLibrary()
+                    HomeLibrary(lastViewedImage: lastViewedImage)
                 }
                 .navigationTitle("Choose an image")
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
-
-        }
     }
+}
 
 #Preview {
     HomeScreenView()
