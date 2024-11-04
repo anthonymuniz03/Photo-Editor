@@ -8,18 +8,24 @@
 import SwiftUI
 
 struct HomeScreenView: View {
-    @State private var lastViewedImage: UIImage?
+    @State private var recentImages: [UIImage] = []
 
     var body: some View {
         NavigationStack {
             VStack {
                 ScrollView {
-                    MainButton(lastViewedImage: $lastViewedImage)
+                    MainButton(recentImages: $recentImages)
                     Spacer()
-                    HomeLibrary(lastViewedImage: lastViewedImage)
+                    HomeLibrary(recentImages: recentImages)
                 }
                 .navigationTitle("Choose an image")
                 .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+        .onChange(of: recentImages) { newImages in
+            print("Recent images updated, total count: \(newImages.count)")
+            newImages.enumerated().forEach { index, image in
+                print("Image at index \(index): \(image)")
             }
         }
     }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainButton: View {
-    @Binding var lastViewedImage: UIImage?
+    @Binding var recentImages: [UIImage]
     @State private var isPickerPresented = false
     @State private var selectedImage: UIImage?
     @State private var isEditImageViewActive = false
@@ -18,6 +18,7 @@ struct MainButton: View {
             VStack {
                 Button(action: {
                     isPickerPresented = true
+                    print("Picker presented")
                 }, label: {
                     Image(systemName: "plus.circle")
                         .resizable()
@@ -41,8 +42,18 @@ struct MainButton: View {
 
                 .onChange(of: selectedImage) { newImage in
                     if let newImage = newImage {
-                        lastViewedImage = newImage
+                        print("New image selected")
+                        
+                        if recentImages.count < 15 {
+                            recentImages.append(newImage)
+                        } else {
+                            recentImages.removeFirst()
+                            recentImages.append(newImage)
+                        }
                         isEditImageViewActive = true
+                        print("Image added to recentImages, total count: \(recentImages.count)")
+                    } else {
+                        print("No image selected")
                     }
                 }
             }
@@ -51,6 +62,5 @@ struct MainButton: View {
 }
 
 #Preview {
-    MainButton(lastViewedImage: .constant(nil))
+    MainButton(recentImages: .constant([]))
 }
-
