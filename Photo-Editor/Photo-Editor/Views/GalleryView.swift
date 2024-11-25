@@ -8,16 +8,23 @@
 import SwiftUI
 
 struct GalleryView: View {
+    @State private var albums: [AlbumID] = [AlbumID(name: "Memorabilia", images: [])]
+    @State private var showPhotoPicker = false
+    @State private var newAlbumName = ""
+    @State private var showAlbumNameAlert = false
+    
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: MemorabiliaView()) {
-                    Text("Memorabilia")
+                ForEach(albums) { album in
+                    NavigationLink(destination: AlbumView(album: album)) {
+                        Text(album.name)
+                    }
                 }
                 
                 Section {
                     Button(action: {
-                        print("Add new gallery tapped")
+                        showAlbumNameAlert = true
                     }) {
                         HStack {
                             Image(systemName: "plus.circle")
@@ -28,6 +35,20 @@ struct GalleryView: View {
             }
             .navigationTitle("Gallery")
             .listStyle(InsetGroupedListStyle())
+            .alert("Enter Album Name", isPresented: $showAlbumNameAlert) {
+                TextField("Album Name", text: $newAlbumName)
+                Button("Create") {
+                    showPhotoPicker = true
+                }
+                Button("Cancel", role: .cancel) { }
+            }
+            .sheet(isPresented: $showPhotoPicker) {
+                PhotoPickerView(onImagesSelected: { selectedImages in
+                    let newAlbum = AlbumID(name: newAlbumName, images: selectedImages)
+                    albums.append(newAlbum)
+                    newAlbumName = ""
+                })
+            }
         }
     }
 }
@@ -35,4 +56,3 @@ struct GalleryView: View {
 #Preview {
     GalleryView()
 }
-
