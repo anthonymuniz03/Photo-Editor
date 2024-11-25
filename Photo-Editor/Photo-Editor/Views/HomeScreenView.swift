@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct HomeScreenView: View {
-    @State private var recentImages: [UIImage] = []
+    @Binding var recentImages: [UIImage]
+    @Binding var trashedImages: [UIImage]
     @State private var selectedImage: UIImage?
     @State private var isEditImageViewActive = false
     @State private var refreshID = UUID()
@@ -21,10 +22,16 @@ struct HomeScreenView: View {
 
                     Spacer()
 
-                    HomeLibrary(recentImages: recentImages, onImageTap: { image in
-                        selectedImage = image
-                        isEditImageViewActive = true
-                    })
+                    HomeLibrary(
+                        recentImages: recentImages,
+                        onImageTap: { image in
+                            selectedImage = image
+                            isEditImageViewActive = true
+                        },
+                        onImageDelete: { image in
+                            moveImageToTrash(image: image)
+                        }
+                    )
                     .id(refreshID)
                 }
                 .navigationTitle("Choose an image")
@@ -44,7 +51,10 @@ struct HomeScreenView: View {
                     EmptyView()
                 }
             }
-            .onAppear(perform: loadRecentImages)
+            .onAppear {
+                loadRecentImages()
+                loadTrashedImages()
+            }
         }
     }
 
@@ -66,6 +76,51 @@ struct HomeScreenView: View {
         } catch {
             print("Failed to save image: \(error.localizedDescription)")
         }
+    }
+
+    func moveImageToTrash(image: UIImage) {
+        if let index = recentImages.firstIndex(of: image) {
+            recentImages.remove(at: index)
+            trashedImages.append(image)
+            refreshID = UUID()
+            saveRecentImagePaths()
+            saveTrashedImagePaths()
+            print("Moved image to trash. Current Trash count: \(trashedImages.count)")
+        }
+    }
+
+    func saveRecentImagePaths() {
+        let imagePaths = recentImages.compactMap { image in
+            let fileName = UUID().uuidString + ".jpg"
+            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let fileURL = documents.appendingPathComponent(fileName)
+
+            if let data = image.jpegData(compressionQuality: 0.8) {
+                try? data.write(to: fileURL)
+                return fileURL.path
+            }
+            return nil
+        }
+
+        UserDefaults.standard.set(imagePaths, forKey: "recentImagePaths")
+        print("Saved recent image paths: \(imagePaths)")
+    }
+
+    func saveTrashedImagePaths() {
+        let imagePaths = trashedImages.compactMap { image in
+            let fileName = UUID().uuidString + ".jpg"
+            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let fileURL = documents.appendingPathComponent(fileName)
+
+            if let data = image.jpegData(compressionQuality: 0.8) {
+                try? data.write(to: fileURL)
+                return fileURL.path
+            }
+            return nil
+        }
+
+        UserDefaults.standard.set(imagePaths, forKey: "trashedImagePaths")
+        print("Saved trashed image paths: \(imagePaths)")
     }
 
     func saveImageToDevice(image: UIImage) async throws -> URL {
@@ -100,22 +155,6 @@ struct HomeScreenView: View {
         }
     }
 
-    func saveRecentImagePaths() {
-        let imagePaths = recentImages.compactMap { image in
-            let fileName = UUID().uuidString + ".jpg"
-            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let fileURL = documents.appendingPathComponent(fileName)
-
-            if let data = image.jpegData(compressionQuality: 0.8) {
-                try? data.write(to: fileURL)
-                return fileURL.path
-            }
-            return nil
-        }
-
-        UserDefaults.standard.set(imagePaths, forKey: "recentImagePaths")
-    }
-
     func loadRecentImages() {
         let imagePaths = UserDefaults.standard.stringArray(forKey: "recentImagePaths") ?? []
         let loadedImages = imagePaths.compactMap { path -> UIImage? in
@@ -123,13 +162,22 @@ struct HomeScreenView: View {
             return UIImage(contentsOfFile: url.path)
         }
         recentImages = loadedImages
+        refreshID = UUID()
         print("Loaded recentImages: \(recentImages.count)")
+    }
+
+    func loadTrashedImages() {
+        let imagePaths = UserDefaults.standard.stringArray(forKey: "trashedImagePaths") ?? []
+        let loadedImages = imagePaths.compactMap { path -> UIImage? in
+            let url = URL(fileURLWithPath: path)
+            return UIImage(contentsOfFile: url.path)
+        }
+        trashedImages = loadedImages
+        print("Loaded trashedImages: \(trashedImages.count)")
     }
 }
 
 
-
-
 #Preview {
-    HomeScreenView()
+    HomeScreenView(recentImages: .constant([]), trashedImages: .constant([]))
 }
