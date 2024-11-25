@@ -32,9 +32,13 @@ struct HomeLibrary: View {
                 }
             }
         }
+        .onAppear {
+            print("Current recentImages count: \(recentImages.count)")
+        }
         .padding()
     }
 }
+
 
 #Preview {
     HomeLibrary(recentImages: [UIImage(named: "placeholder")!], onImageTap: { _ in })
