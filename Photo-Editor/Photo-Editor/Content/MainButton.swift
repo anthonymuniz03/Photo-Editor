@@ -35,13 +35,25 @@ struct MainButton: View {
                 NavigationLink(
                     destination: EditImageView(
                         image: selectedImage ?? UIImage(),
-                        onSave: { savedImage in
+                        onSave: { savedImageOrUrl in
                             print("onSave closure called in NavigationLink.")
 
                             Task {
-                                print("Starting Task to save image...")
-                                await saveImageAndAddToLibrary(image: savedImage)
-                                print("Finished Task to save image...")
+                                if let savedImage = savedImageOrUrl as? UIImage {
+                                    print("UIImage received, starting Task to save...")
+                                    await saveImageAndAddToLibrary(image: savedImage)
+                                    print("Finished Task to save image.")
+                                } else if let imageUrlString = savedImageOrUrl as? String {
+                                    print("Cloudinary URL received: \(imageUrlString)")
+                                    if let downloadedImage = await downloadImage(from: imageUrlString) {
+                                        await saveImageAndAddToLibrary(image: downloadedImage)
+                                        print("Image downloaded and saved to photo library.")
+                                    } else {
+                                        print("Failed to download image from Cloudinary URL.")
+                                    }
+                                } else {
+                                    print("Unknown type received from onSave closure.")
+                                }
                             }
                         }
                     ),
@@ -49,6 +61,8 @@ struct MainButton: View {
                 ) {
                     EmptyView()
                 }
+                .hidden()
+
                 .hidden()
 
                 .onChange(of: selectedImage) { newImage in
@@ -63,6 +77,22 @@ struct MainButton: View {
         }
     }
 
+    func downloadImage(from urlString: String) async -> UIImage? {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL: \(urlString)")
+            return nil
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return UIImage(data: data)
+        } catch {
+            print("Failed to download image: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    
     func saveImageAndAddToLibrary(image: UIImage) async {
         print("saveImageAndAddToLibrary function called...")
         do {

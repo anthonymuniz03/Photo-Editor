@@ -40,9 +40,16 @@ struct HomeScreenView: View {
                 NavigationLink(
                     destination: EditImageView(
                         image: selectedImage ?? UIImage(),
-                        onSave: { image in
+                        onSave: { imageOrUrl in
                             Task {
-                                await saveImageAndAddToLibrary(image: image)
+                                if let urlString = imageOrUrl as? String {
+                                    print("Cloudinary URL received: \(urlString)")
+                                    if let downloadedImage = await downloadImage(from: urlString) {
+                                        await saveImageAndAddToLibrary(image: downloadedImage)
+                                    }
+                                } else if let image = imageOrUrl as? UIImage {
+                                    await saveImageAndAddToLibrary(image: image)
+                                }
                             }
                         }
                     ),
@@ -57,6 +64,22 @@ struct HomeScreenView: View {
             }
         }
     }
+    
+    func downloadImage(from urlString: String) async -> UIImage? {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL: \(urlString)")
+            return nil
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return UIImage(data: data)
+        } catch {
+            print("Failed to download image: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
 
     func saveImageAndAddToLibrary(image: UIImage) async {
         print("saveImageAndAddToLibrary function called...")
