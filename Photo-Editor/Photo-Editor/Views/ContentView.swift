@@ -8,32 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var recentImages: [UIImage] = []
+    @State private var trashedImages: [UIImage] = []
+
     var body: some View {
-        
         VStack {
             TabView {
-                HomeScreenView()
-                    .tabItem {
-                        Label("Home", systemImage: "house")
-                    }
+                HomeScreenView(
+                    recentImages: $recentImages,
+                    trashedImages: $trashedImages
+                )
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
                 
                 GalleryView()
                     .tabItem {
                         Label("Gallery", systemImage: "photo")
                     }
                 
-                TrashView()
-                    .tabItem {
-                        Label("Trash", systemImage: "trash")
-                    }
+                TrashView(
+                    trashedImages: $trashedImages,
+                    recentImages: $recentImages
+                )
+                .tabItem {
+                    Label("Trash", systemImage: "trash")
+                }
                 
                 SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gearshape")
                     }
-                
             }
-            
         }
     }
 }
