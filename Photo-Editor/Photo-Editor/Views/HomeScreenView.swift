@@ -13,7 +13,7 @@ struct HomeScreenView: View {
     @State private var selectedImage: UIImage?
     @State private var isEditImageViewActive = false
     @State private var refreshID = UUID()
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -37,8 +37,13 @@ struct HomeScreenView: View {
                 .navigationTitle("Choose an image")
                 .navigationBarTitleDisplayMode(.inline)
 
-                NavigationLink(
-                    destination: EditImageView(
+                // Updated NavigationLink
+                NavigationLink(value: selectedImage) {
+                    EmptyView()
+                }
+                .hidden()
+                .navigationDestination(isPresented: $isEditImageViewActive) {
+                    EditImageView(
                         image: selectedImage ?? UIImage(),
                         onSave: { imageOrUrl in
                             Task {
@@ -52,10 +57,7 @@ struct HomeScreenView: View {
                                 }
                             }
                         }
-                    ),
-                    isActive: $isEditImageViewActive
-                ) {
-                    EmptyView()
+                    )
                 }
             }
             .onAppear {
@@ -64,7 +66,7 @@ struct HomeScreenView: View {
             }
         }
     }
-    
+
     func downloadImage(from urlString: String) async -> UIImage? {
         guard let url = URL(string: urlString) else {
             print("Invalid URL: \(urlString)")
@@ -79,7 +81,6 @@ struct HomeScreenView: View {
             return nil
         }
     }
-
 
     func saveImageAndAddToLibrary(image: UIImage) async {
         print("saveImageAndAddToLibrary function called...")
@@ -199,7 +200,6 @@ struct HomeScreenView: View {
         print("Loaded trashedImages: \(trashedImages.count)")
     }
 }
-
 
 #Preview {
     HomeScreenView(recentImages: .constant([]), trashedImages: .constant([]))

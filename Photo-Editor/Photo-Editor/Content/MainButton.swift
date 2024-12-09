@@ -19,13 +19,13 @@ struct MainButton: View {
                 Button(action: {
                     isPickerPresented = true
                     print("Picker presented")
-                }, label: {
+                }) {
                     Image(systemName: "plus.circle")
                         .resizable()
                         .frame(width: 70, height: 70)
                         .foregroundStyle(Color.gray)
                         .padding(120)
-                })
+                }
                 .buttonStyle(.bordered)
                 .accessibilityLabel("selectLibraryImage")
                 .sheet(isPresented: $isPickerPresented) {
@@ -33,8 +33,25 @@ struct MainButton: View {
                 }
 
                 NavigationLink(
-                    destination: EditImageView(
-                        image: selectedImage ?? UIImage(),
+                    value: selectedImage,
+                    label: {
+                        EmptyView()
+                    }
+                )
+                .hidden()
+            }
+            .onChange(of: selectedImage) {
+                if selectedImage != nil {
+                    print("New image selected")
+                    isEditImageViewActive = true
+                } else {
+                    print("No image selected")
+                }
+            }
+            .navigationDestination(isPresented: $isEditImageViewActive) {
+                if let image = selectedImage {
+                    EditImageView(
+                        image: image,
                         onSave: { savedImageOrUrl in
                             print("onSave closure called in NavigationLink.")
 
@@ -56,22 +73,7 @@ struct MainButton: View {
                                 }
                             }
                         }
-                    ),
-                    isActive: $isEditImageViewActive
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                .hidden()
-
-                .onChange(of: selectedImage) { newImage in
-                    if let newImage = newImage {
-                        print("New image selected")
-                        isEditImageViewActive = true
-                    } else {
-                        print("No image selected")
-                    }
+                    )
                 }
             }
         }
@@ -92,7 +94,6 @@ struct MainButton: View {
         }
     }
 
-    
     func saveImageAndAddToLibrary(image: UIImage) async {
         print("saveImageAndAddToLibrary function called...")
         do {
@@ -115,26 +116,18 @@ struct MainButton: View {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .background).async {
                 do {
-                    print("Attempting to save image to device...")
-
                     let fileManager = FileManager.default
                     let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-                    print("Document directory: \(documents.path)")
-
                     let fileName = UUID().uuidString + ".jpg"
                     let fileURL = documents.appendingPathComponent(fileName)
 
                     if let data = image.jpegData(compressionQuality: 0.8) {
-                        print("JPEG data generated successfully.")
                         try data.write(to: fileURL)
-                        print("Image written to: \(fileURL.path)")
                         continuation.resume(returning: fileURL)
                     } else {
-                        print("Failed to generate JPEG data.")
                         throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create image data"])
                     }
                 } catch {
-                    print("Error during saveImageToDevice: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -164,7 +157,6 @@ struct MainButton: View {
         UserDefaults.standard.set(imagePaths, forKey: "recentImagePaths")
     }
 }
-
 
 #Preview {
     MainButton(recentImages: .constant([]))

@@ -17,7 +17,7 @@ struct TrashView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(0..<15, id: \.self) { index in
