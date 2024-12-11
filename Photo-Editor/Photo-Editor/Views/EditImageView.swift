@@ -14,6 +14,8 @@ struct EditImageView: View {
     @State private var isLoading = false
     @State private var uploadStatusMessage: String?
 
+    let photoController = PhotoController()
+
     var body: some View {
         VStack {
             Image(uiImage: image)
@@ -29,7 +31,7 @@ struct EditImageView: View {
             }
 
             Button(action: {
-                uploadImageToCloudinary()
+                uploadImage()
             }) {
                 if isLoading {
                     ProgressView()
@@ -53,13 +55,13 @@ struct EditImageView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func uploadImageToCloudinary() {
+    private func uploadImage() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
 
         Task {
             do {
-                if let uploadedUrl = try await uploadImage(image: image) {
+                if let uploadedUrl = try await photoController.uploadImageToCloudinary(image: image) {
                     DispatchQueue.main.async {
                         isLoading = false
                         uploadStatusMessage = "Upload successful!"
@@ -74,49 +76,7 @@ struct EditImageView: View {
             }
         }
     }
-
-    // MARK: - Helper Function for Cloudinary Upload
-    private func uploadImage(image: UIImage) async throws -> String? {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create JPEG data"])
-        }
-
-        let boundary = UUID().uuidString
-        let url = URL(string: "https://api.cloudinary.com/v1_1/dhmacf7uv/image/upload")!
-        var request = URLRequest(url: url)
-
-        request.httpMethod = "POST"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        var body = Data()
-
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"upload_preset\"\r\n\r\n".data(using: .utf8)!)
-        body.append("ml_default\r\n".data(using: .utf8)!)
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData)
-        body.append("\r\n".data(using: .utf8)!)
-
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        request.httpBody = body
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NSError(domain: "UploadError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid server response"])
-        }
-
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-              let urlString = json["secure_url"] as? String else {
-            throw NSError(domain: "UploadError", code: 3, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response"])
-        }
-
-        return urlString
-    }
 }
-
 
 #Preview {
     EditImageView(
