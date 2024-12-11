@@ -10,8 +10,7 @@ import SwiftUI
 struct EditImageView: View {
     var image: UIImage
     var onSave: (Any) -> Void
-
-    @State private var isLoading = false
+    @Binding var isLoading: Bool
     @State private var uploadStatusMessage: String?
     @Environment(\.dismiss) var dismiss
 
@@ -44,17 +43,14 @@ struct EditImageView: View {
                 .disabled(isLoading)
             }
             .blur(radius: isLoading ? 3 : 0)
-
-            if isLoading {
-                LoadingScreenView()
-            }
+            
+            
         }
         .navigationTitle("Edit Image")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(isLoading)
     }
 
-    // MARK: - Upload Image to Cloudinary
     private func uploadImageToCloudinary() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
@@ -85,8 +81,7 @@ struct EditImageView: View {
 #Preview {
     EditImageView(
         image: UIImage(named: "logo") ?? UIImage(),
-        onSave: { _ in
-            print("Save action triggered in preview.")
-        }
+        onSave: { _ in },
+        isLoading: .constant(false)
     )
 }

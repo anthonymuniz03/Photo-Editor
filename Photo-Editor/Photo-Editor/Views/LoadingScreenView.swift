@@ -12,8 +12,11 @@ struct LoadingScreenView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
-            VStack(spacing: 20) {
+            // Solid background to cover everything
+            Color.white
+                .edgesIgnoringSafeArea(.all)
+
+            VStack {
                 Image("logo")
                     .resizable()
                     .scaledToFit()
@@ -26,9 +29,9 @@ struct LoadingScreenView: View {
                     )
 
                 Text("Loading...")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .font(.headline)
+                    .foregroundColor(.gray)
+                    .padding(.top, 16)
             }
         }
         .onAppear {
