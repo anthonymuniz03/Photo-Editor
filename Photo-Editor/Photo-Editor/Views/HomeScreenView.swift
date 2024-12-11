@@ -76,7 +76,7 @@ struct HomeScreenView: View {
             await MainActor.run {
                 recentImages.append(image)
                 refreshID = UUID()
-                photoController.saveRecentImagePaths(images: recentImages)
+                photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
                 print("Image saved and added to recentImages.")
                 print("Current recentImages count: \(recentImages.count)")
             }
@@ -90,15 +90,15 @@ struct HomeScreenView: View {
             recentImages.remove(at: index)
             trashedImages.append(image)
             refreshID = UUID()
-            photoController.saveRecentImagePaths(images: recentImages)
-            photoController.saveRecentImagePaths(images: trashedImages, key: "trashedImagePaths")
+            photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+            photoController.saveImagePaths(images: trashedImages, key: "trashedImagePaths")
             print("Moved image to trash. Current Trash count: \(trashedImages.count)")
         }
     }
     
     func loadImages() {
-        recentImages = photoController.loadRecentImages()
-        trashedImages = photoController.loadTrashedImages()
+        recentImages = photoController.loadImages(forKey: "recentImagePaths")
+        trashedImages = photoController.loadImages(forKey: "trashedImagePaths")
     }
 }
 

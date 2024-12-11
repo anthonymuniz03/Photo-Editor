@@ -13,33 +13,26 @@ struct EditImageView: View {
 
     @State private var isLoading = false
     @State private var uploadStatusMessage: String?
-
-    let photoController = PhotoController()
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
-
-            if let uploadStatusMessage = uploadStatusMessage {
-                Text(uploadStatusMessage)
-                    .foregroundColor(.gray)
+        ZStack {
+            VStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
-            }
 
-            Button(action: {
-                uploadImage()
-            }) {
-                if isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
+                if let uploadStatusMessage = uploadStatusMessage {
+                    Text(uploadStatusMessage)
+                        .foregroundColor(.gray)
                         .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(8)
-                } else {
+                }
+
+                Button(action: {
+                    uploadImageToCloudinary()
+                }) {
                     Text("Upload and Save Image")
                         .foregroundColor(.white)
                         .padding()
@@ -47,25 +40,36 @@ struct EditImageView: View {
                         .background(Color.blue)
                         .cornerRadius(8)
                 }
+                .padding()
+                .disabled(isLoading)
             }
-            .padding()
-            .disabled(isLoading)
+            .blur(radius: isLoading ? 3 : 0)
+
+            if isLoading {
+                LoadingScreenView()
+            }
         }
         .navigationTitle("Edit Image")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(isLoading)
     }
 
-    private func uploadImage() {
+    // MARK: - Upload Image to Cloudinary
+    private func uploadImageToCloudinary() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
 
         Task {
             do {
-                if let uploadedUrl = try await photoController.uploadImageToCloudinary(image: image) {
+                if let uploadedUrl = try await PhotoController().uploadImageToCloudinary(image: image) {
+                    DispatchQueue.main.async {
+                        uploadStatusMessage = "Upload successful!"
+                    }
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
                     DispatchQueue.main.async {
                         isLoading = false
-                        uploadStatusMessage = "Upload successful!"
                         onSave(uploadedUrl)
+                        dismiss()
                     }
                 }
             } catch {
@@ -80,7 +84,7 @@ struct EditImageView: View {
 
 #Preview {
     EditImageView(
-        image: UIImage(named: "placeholder") ?? UIImage(),
+        image: UIImage(named: "logo") ?? UIImage(),
         onSave: { _ in
             print("Save action triggered in preview.")
         }

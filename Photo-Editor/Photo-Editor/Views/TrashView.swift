@@ -11,6 +11,7 @@ struct TrashView: View {
     @Binding var trashedImages: [UIImage]
     @Binding var recentImages: [UIImage]
     @State private var refreshID = UUID()
+    private let photoController = PhotoController()
 
     let columns = [
         GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())
@@ -37,6 +38,7 @@ struct TrashView: View {
                                 }
                         } else {
                             PlaceHolderImageView()
+                                .frame(width: 100, height: 100)
                         }
                     }
                 }
@@ -45,6 +47,9 @@ struct TrashView: View {
             }
             .navigationTitle("Trash")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                loadTrashedImages()
+            }
         }
     }
 
@@ -52,49 +57,18 @@ struct TrashView: View {
         if let index = trashedImages.firstIndex(of: image) {
             trashedImages.remove(at: index)
             recentImages.append(image)
-            saveTrashedImagePaths()
-            saveRecentImagePaths()
             refreshID = UUID()
+            photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+            photoController.saveImagePaths(images: trashedImages, key: "trashedImagePaths")
             print("Restored image to recentImages. Current count: \(recentImages.count)")
             print("Updated trashedImages count: \(trashedImages.count)")
         }
     }
 
-    func saveRecentImagePaths() {
-        let imagePaths = recentImages.compactMap { image in
-            let fileName = UUID().uuidString + ".jpg"
-            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let fileURL = documents.appendingPathComponent(fileName)
-
-            if let data = image.jpegData(compressionQuality: 0.8) {
-                try? data.write(to: fileURL)
-                return fileURL.path
-            }
-            return nil
-        }
-
-        UserDefaults.standard.set(imagePaths, forKey: "recentImagePaths")
-        print("Saved recent image paths: \(imagePaths)")
-    }
-
-    func saveTrashedImagePaths() {
-        let imagePaths = trashedImages.compactMap { image in
-            let fileName = UUID().uuidString + ".jpg"
-            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let fileURL = documents.appendingPathComponent(fileName)
-
-            if let data = image.jpegData(compressionQuality: 0.8) {
-                try? data.write(to: fileURL)
-                return fileURL.path
-            }
-            return nil
-        }
-
-        UserDefaults.standard.set(imagePaths, forKey: "trashedImagePaths")
-        print("Saved trashed image paths: \(imagePaths)")
+    func loadTrashedImages() {
+        trashedImages = photoController.loadTrashedImages()
     }
 }
-
 
 #Preview {
     TrashView(trashedImages: .constant([]), recentImages: .constant([]))

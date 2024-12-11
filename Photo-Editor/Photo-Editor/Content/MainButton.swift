@@ -91,7 +91,7 @@ struct MainButton: View {
                 recentImages.append(image)
                 print("Image saved and added to recentImages.")
                 print("Current recentImages count: \(recentImages.count)")
-                photoController.saveRecentImagePaths(images: recentImages, key: "recentImagePaths")
+                photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
             }
         } catch {
             print("Failed to save image: \(error.localizedDescription)")

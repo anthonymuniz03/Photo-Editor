@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D502D06B48400D41170 /* PhotoController.swift */; };
+		EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */; };
 		EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */; };
 		EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315E2CC5BBA100680F9F /* GalleryView.swift */; };
 		EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		EB0E9D502D06B48400D41170 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhotoController.swift; path = /Users/anthonymuniz/Documents/PhotoController.swift; sourceTree = "<absolute>"; };
+		EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenView.swift; sourceTree = "<group>"; };
 		EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
 		EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLibrary.swift; sourceTree = "<group>"; };
 		EB73315E2CC5BBA100680F9F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				EB84AD372CD872B700B9CA3F /* EditImageView.swift */,
 				EB84AD3B2CD8B08900B9CA3F /* AlbumView.swift */,
 				EB84AD3D2CD8B0C700B9CA3F /* PhotoPickerView.swift */,
+				EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 				EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */,
 				EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */,
 				EB84AD3E2CD8B0C700B9CA3F /* PhotoPickerView.swift in Sources */,
+				EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */,
 				EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */,
 				EBDD47A92CBC8C59001823C6 /* MainButton.swift in Sources */,
 			);
