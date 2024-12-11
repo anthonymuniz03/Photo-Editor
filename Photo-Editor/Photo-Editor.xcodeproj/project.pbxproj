@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D502D06B48400D41170 /* PhotoController.swift */; };
 		EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */; };
 		EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315E2CC5BBA100680F9F /* GalleryView.swift */; };
 		EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EB0E9D502D06B48400D41170 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhotoController.swift; path = /Users/anthonymuniz/Documents/PhotoController.swift; sourceTree = "<absolute>"; };
 		EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
 		EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLibrary.swift; sourceTree = "<group>"; };
 		EB73315E2CC5BBA100680F9F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
@@ -60,6 +62,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EB0E9D4F2D06B46600D41170 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EB0E9D502D06B48400D41170 /* PhotoController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		EB7331592CC5AF7400680F9F /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +115,7 @@
 		EBDD47992CB884A2001823C6 /* Photo-Editor */ = {
 			isa = PBXGroup;
 			children = (
+				EB0E9D4F2D06B46600D41170 /* Controllers */,
 				EBE8573F2CC5CD9B00E862B2 /* TempViews */,
 				EB7331602CC5BBB600680F9F /* Content */,
 				EB7331592CC5AF7400680F9F /* Views */,
@@ -218,6 +229,7 @@
 				EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */,
 				EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */,
 				EB84AD3E2CD8B0C700B9CA3F /* PhotoPickerView.swift in Sources */,
+				EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */,
 				EBDD47A92CBC8C59001823C6 /* MainButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

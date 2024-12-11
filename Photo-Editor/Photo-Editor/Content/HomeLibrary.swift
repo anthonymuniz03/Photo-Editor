@@ -13,6 +13,7 @@ struct HomeLibrary: View {
     ]
     var recentImages: [UIImage]
     var onImageTap: (UIImage) -> Void
+    var onImageDelete: (UIImage) -> Void
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 20) {
@@ -27,6 +28,13 @@ struct HomeLibrary: View {
                         .onTapGesture {
                             onImageTap(recentImages[index])
                         }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                onImageDelete(recentImages[index])
+                            } label: {
+                                Label("Move to Trash", systemImage: "trash")
+                            }
+                        }
                 } else {
                     PlaceHolderImageView()
                 }
@@ -37,5 +45,9 @@ struct HomeLibrary: View {
 }
 
 #Preview {
-    HomeLibrary(recentImages: [UIImage(named: "placeholder")!], onImageTap: { _ in })
+    HomeLibrary(
+        recentImages: [UIImage(named: "placeholder")!],
+        onImageTap: { _ in },
+        onImageDelete: { _ in }
+    )
 }
