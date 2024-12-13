@@ -23,13 +23,21 @@ struct HomeScreenView: View {
                 Image("background")
                     .resizable()
                     .scaledToFill()
-                    .edgesIgnoringSafeArea(.all)
+                    .ignoresSafeArea()
 
                 VStack {
                     ScrollView {
-                        MainButton(recentImages: $recentImages, onImageSelected: { image in
-                            showLoadingAndNavigate(image: image)
-                        })
+                        VStack {
+                            MainButton(
+                                recentImages: $recentImages,
+                                selectedImage: $selectedImage,
+                                isEditImageViewActive: $isEditImageViewActive,
+                                onImageSelected: { image in
+                                    showLoadingAndNavigate(image: image)
+                                }
+                            )
+                            .padding(.top, 40)
+                        }
 
                         Spacer()
 
@@ -47,11 +55,6 @@ struct HomeScreenView: View {
                     }
                     .navigationTitle("Choose an image")
                     .navigationBarTitleDisplayMode(.inline)
-
-                    NavigationLink(value: selectedImage) {
-                        EmptyView()
-                    }
-                    .hidden()
                     .navigationDestination(isPresented: $isEditImageViewActive) {
                         EditImageView(
                             image: selectedImage ?? UIImage(),
@@ -70,7 +73,14 @@ struct HomeScreenView: View {
                         )
                     }
                 }
+
+                if isLoading {
+                    LoadingScreenView()
+                        .zIndex(1)
+                }
             }
+            .toolbarBackground(.clear, for: .navigationBar)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .onAppear {
                 loadImages()
             }

@@ -9,25 +9,29 @@ import SwiftUI
 
 struct MainButton: View {
     @Binding var recentImages: [UIImage]
+    @Binding var selectedImage: UIImage?
+    @Binding var isEditImageViewActive: Bool
     var onImageSelected: (UIImage) -> Void
 
     @State private var isPickerPresented = false
-    @State private var selectedImage: UIImage?
 
     let photoController = PhotoController()
 
     var body: some View {
-        Button(action: {
-            isPickerPresented = true
-            print("Picker presented")
-        }) {
+        ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(Color.white.opacity(0.3))
+                .frame(width: 350, height: 350)
+
             Image(systemName: "plus.circle")
                 .resizable()
                 .frame(width: 70, height: 70)
-                .foregroundStyle(Color.gray)
-                .padding(120)
+                .foregroundColor(.white.opacity(0.6))
         }
-        .buttonStyle(.bordered)
+        .onTapGesture {
+            isPickerPresented = true
+            print("Picker presented")
+        }
         .accessibilityLabel("selectLibraryImage")
         .sheet(isPresented: $isPickerPresented) {
             PhotoPicker(selectedImage: $selectedImage)
@@ -36,6 +40,7 @@ struct MainButton: View {
             if let newImage {
                 print("New image selected")
                 onImageSelected(newImage)
+                isEditImageViewActive = true
             } else {
                 print("No image selected")
             }
@@ -43,7 +48,11 @@ struct MainButton: View {
     }
 }
 
-// Preview for development purposes
 #Preview {
-    MainButton(recentImages: .constant([]), onImageSelected: { _ in })
+    MainButton(
+        recentImages: .constant([]),
+        selectedImage: .constant(nil),
+        isEditImageViewActive: .constant(false),
+        onImageSelected: { _ in }
+    )
 }
