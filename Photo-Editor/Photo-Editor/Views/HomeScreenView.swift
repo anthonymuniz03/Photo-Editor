@@ -20,6 +20,11 @@ struct HomeScreenView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                Image("background")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+
                 VStack {
                     ScrollView {
                         MainButton(recentImages: $recentImages, onImageSelected: { image in
@@ -75,7 +80,7 @@ struct HomeScreenView: View {
     func showLoadingAndNavigate(image: UIImage) {
         isLoading = true
         Task {
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1-second delay for smoother transition
+            try await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run {
                 selectedImage = image
                 isEditImageViewActive = true
