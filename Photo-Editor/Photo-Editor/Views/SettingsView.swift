@@ -9,10 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
-                
-                // Placeholders for filling out list
                 Section(header: Text("General")) {
                     NavigationLink(destination: Text("Profile Settings")) {
                         Text("Profile")
@@ -25,11 +23,11 @@ struct SettingsView: View {
                     NavigationLink(destination: Text("Appearance Settings")) {
                         Text("Appearance")
                     }
+                    
                     NavigationLink(destination: Text("Version Number: 0.0.0")) {
                         Text("Version")
                     }
                 }
-                
             }
             .navigationTitle("Settings")
             .listStyle(InsetGroupedListStyle())

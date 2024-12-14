@@ -24,7 +24,7 @@ struct ContentView: View {
                     Label("Home", systemImage: "house")
                 }
 
-                GalleryView()
+                GalleryView(recentImages: $recentImages)
                     .tabItem {
                         Label("Gallery", systemImage: "photo")
                     }
@@ -43,10 +43,9 @@ struct ContentView: View {
                     }
             }
 
-            // Full-screen loading overlay
             if isLoading {
                 LoadingScreenView()
-                    .ignoresSafeArea(.all) // Ensures it covers the entire screen
+                    .ignoresSafeArea(.all)
             }
         }
     }

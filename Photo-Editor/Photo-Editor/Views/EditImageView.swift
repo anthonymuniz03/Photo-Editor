@@ -111,8 +111,6 @@ struct EditImageView: View {
         }
     }
 
-    // MARK: - Image Editing Functions
-
     func applyTextOverlay() {
         let renderer = UIGraphicsImageRenderer(size: image.size)
         let newImage = renderer.image { context in
@@ -150,53 +148,33 @@ struct EditImageView: View {
     }
 
     func rotateImage(by degrees: CGFloat) {
-        isLoading = true
-        let photoController = PhotoController()
+        let radians = degrees * (.pi / 180)
+        let newSize = CGSize(width: image.size.height, height: image.size.width)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
 
-        DispatchQueue.global(qos: .userInitiated).async {
-            let radians = degrees * (.pi / 180)
-            let newSize = CGSize(width: self.image.size.height, height: self.image.size.width)
-            let renderer = UIGraphicsImageRenderer(size: newSize)
-
-            let rotatedImage = renderer.image { context in
-                context.cgContext.translateBy(x: newSize.width / 2, y: newSize.height / 2)
-                context.cgContext.rotate(by: radians)
-                context.cgContext.translateBy(x: -self.image.size.width / 2, y: -self.image.size.height / 2)
-                self.image.draw(at: .zero)
-            }
-
-            if let standardImage = photoController.convertToStandardFormat(image: rotatedImage) {
-                DispatchQueue.main.async {
-                    self.image = standardImage
-                    self.isLoading = false
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                    print("Failed to convert rotated image to standard format.")
-                }
-            }
+        let rotatedImage = renderer.image { context in
+            context.cgContext.translateBy(x: newSize.width / 2, y: newSize.height / 2)
+            context.cgContext.rotate(by: radians)
+            context.cgContext.translateBy(x: -image.size.width / 2, y: -image.size.height / 2)
+            image.draw(at: .zero)
         }
+
+        image = rotatedImage
     }
 
     private func uploadImageToCloudinary() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
 
-        Task {
-            do {
-                if let uploadedUrl = try await PhotoController().uploadImageToCloudinary(image: image) {
-                    await MainActor.run {
-                        uploadStatusMessage = "Upload successful!"
-                        isLoading = false
-                        onSave(uploadedUrl)
-                        dismiss()
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    isLoading = false
-                    uploadStatusMessage = "Upload failed: \(error.localizedDescription)"
+        PhotoController().uploadImageToCloudinary(image: image) { urlString in
+            DispatchQueue.main.async {
+                isLoading = false
+                if let uploadedUrl = urlString {
+                    uploadStatusMessage = "Upload successful!"
+                    onSave(uploadedUrl)
+                    dismiss()
+                } else {
+                    uploadStatusMessage = "Upload failed"
                     showErrorAlert = true
                 }
             }

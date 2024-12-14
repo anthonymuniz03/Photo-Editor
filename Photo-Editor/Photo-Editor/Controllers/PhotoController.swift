@@ -20,9 +20,9 @@ class PhotoController {
                     let fileURL = documents.appendingPathComponent(fileName)
                     print("Documents directory: \(documents.path)")
 
-                    // Ensure the image is compressed and converted to a standard JPEG
                     guard let data = image.jpegData(compressionQuality: 0.8) else {
-                        throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create JPEG data"])
+                        continuation.resume(throwing: NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create JPEG data"]))
+                        return
                     }
 
                     try data.write(to: fileURL)
@@ -34,9 +34,6 @@ class PhotoController {
         }
     }
 
-
-
-    // MARK: - Download Image from URL
     func downloadImage(from urlString: String) async -> UIImage? {
         guard let url = URL(string: urlString) else {
             print("Invalid URL: \(urlString)")
@@ -45,13 +42,15 @@ class PhotoController {
 
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            return UIImage(data: data)
+            if let image = UIImage(data: data) {
+                return image.resized(to: CGSize(width: 800, height: 800))
+            }
         } catch {
             print("Failed to download image: \(error.localizedDescription)")
-            return nil
         }
+        return nil
     }
-    
+
     func saveImagePaths(images: [UIImage], key: String) {
         let fileManager = FileManager.default
         let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -75,7 +74,6 @@ class PhotoController {
         print("Saved image paths for \(key): \(imagePaths)")
     }
 
-    // MARK: - Load Images
     func loadImages(forKey key: String, completion: @escaping ([UIImage]) -> Void) {
         DispatchQueue.global(qos: .background).async {
             let imagePaths = UserDefaults.standard.stringArray(forKey: key) ?? []
@@ -94,6 +92,7 @@ class PhotoController {
         loadImages(forKey: "trashedImagePaths", completion: completion)
     }
 
+    // MARK: - Convert to Standard Format
     func convertToStandardFormat(image: UIImage) -> UIImage? {
         let renderer = UIGraphicsImageRenderer(size: image.size)
         return renderer.image { _ in
@@ -101,7 +100,6 @@ class PhotoController {
         }
     }
 
-    // MARK: - Upload Image to Cloudinary
     func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(nil)
@@ -142,7 +140,6 @@ class PhotoController {
                 return
             }
 
-            // Save the URL to UserDefaults
             var savedURLs = UserDefaults.standard.stringArray(forKey: "cloudImageURLs") ?? []
             savedURLs.insert(urlString, at: 0)
             UserDefaults.standard.set(savedURLs, forKey: "cloudImageURLs")
@@ -151,9 +148,6 @@ class PhotoController {
         }.resume()
     }
 
-
-
-    // MARK: - Save Cloud Image URLs
     func saveCloudImageURLs(urls: [String]) {
         UserDefaults.standard.set(urls, forKey: "cloudImageURLs")
     }
@@ -171,10 +165,7 @@ class PhotoController {
 
         return startIndex < endIndex ? Array(allImageURLs[startIndex..<endIndex]) : []
     }
-
 }
-
-// MARK: - UIImage Extension for Resizing
 
 extension UIImage {
     func resized(to targetSize: CGSize) -> UIImage? {
@@ -184,4 +175,3 @@ extension UIImage {
         }
     }
 }
-
