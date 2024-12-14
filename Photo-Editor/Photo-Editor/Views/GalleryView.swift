@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GalleryView: View {
     @Binding var recentImages: [UIImage]
+    @Binding var trashedCloudImageURLs: [String]
     @State private var cloudImageURLs: [String] = []
     @State private var currentPage = 1
     @State private var isRefreshing = false
@@ -55,22 +56,37 @@ struct GalleryView: View {
                     }
                     .padding([.top, .horizontal], 20)
 
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                            ForEach(cloudImageURLs, id: \.self) { urlString in
-                                CloudImageView(urlString: urlString) { image in
-                                    if let resizedImage = image.resized(to: CGSize(width: 800, height: 800)) {
-                                        selectedImage = resizedImage
-                                        showEditView = true
-                                    } else {
-                                        print("Failed to resize image.")
+                    if cloudImageURLs.isEmpty {
+                        Spacer()
+                        Text("No images in Cloud Gallery")
+                            .font(.title2)
+                            .foregroundColor(.white.opacity(0.7))
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                                ForEach(cloudImageURLs, id: \.self) { urlString in
+                                    CloudImageView(urlString: urlString) { image in
+                                        if let resizedImage = image.resized(to: CGSize(width: 800, height: 800)) {
+                                            selectedImage = resizedImage
+                                            showEditView = true
+                                        } else {
+                                            print("Failed to resize image.")
+                                        }
+                                    }
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            deleteCloudImage(urlString: urlString)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
                                     }
                                 }
                             }
-                        }
-                        .padding()
-                        .refreshable {
-                            refreshGallery()
+                            .padding()
+                            .refreshable {
+                                refreshGallery()
+                            }
                         }
                     }
                 }
@@ -101,8 +117,6 @@ struct GalleryView: View {
         }
     }
 
-    // MARK: - Functions
-
     func loadCloudImages() {
         cloudImageURLs = photoController.loadCloudImageURLs(page: currentPage, pageSize: pageSize)
     }
@@ -113,6 +127,14 @@ struct GalleryView: View {
             loadCloudImages()
             isRefreshing = false
         }
+    }
+
+    func deleteCloudImage(urlString: String) {
+        photoController.deleteCloudImage(urlString: urlString)
+        cloudImageURLs.removeAll { $0 == urlString }
+        trashedCloudImageURLs.append(urlString)
+        photoController.saveCloudImageURLs(urls: cloudImageURLs)
+        photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
     }
 
     func saveImageToLibrary(image: UIImage) async {
@@ -148,8 +170,9 @@ struct CloudImageView: View {
                         onImageTap(uiImage)
                     }
             } else {
-                ProgressView()
+                PlaceHolderImageView()
                     .frame(width: 100, height: 100)
+                    .cornerRadius(10)
                     .onAppear {
                         loadImage()
                     }
@@ -172,8 +195,6 @@ struct CloudImageView: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
-    GalleryView(recentImages: .constant([]))
+    GalleryView(recentImages: .constant([]), trashedCloudImageURLs: .constant([]))
 }

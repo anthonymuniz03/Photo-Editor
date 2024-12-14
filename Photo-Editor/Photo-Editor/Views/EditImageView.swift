@@ -199,8 +199,6 @@ enum FilterType {
     case original, cold, warm
 }
 
-// MARK: - Filter Selection View
-
 struct FilterSelectionView: View {
     let originalImage: UIImage
     @Binding var selectedFilter: FilterType
@@ -265,8 +263,6 @@ struct FilterPreview: View {
         }
     }
 }
-
-// MARK: - Text Field Alert Modifier
 
 extension View {
     func textFieldAlert(isPresented: Binding<Bool>, title: String, text: Binding<String>, onConfirm: @escaping () -> Void) -> some View {

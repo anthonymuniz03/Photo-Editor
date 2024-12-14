@@ -10,6 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var recentImages: [UIImage] = []
     @State private var trashedImages: [UIImage] = []
+    @Binding var cloudImageURLs: [String]
+    @Binding var trashedCloudImageURLs: [String]
     @State private var isLoading = false
 
     var body: some View {
@@ -24,14 +26,18 @@ struct ContentView: View {
                     Label("Home", systemImage: "house")
                 }
 
-                GalleryView(recentImages: $recentImages)
-                    .tabItem {
-                        Label("Gallery", systemImage: "photo")
-                    }
+                GalleryView(
+                    recentImages: $recentImages,
+                    trashedCloudImageURLs: $trashedCloudImageURLs
+                )
+                .tabItem {
+                    Label("Gallery", systemImage: "photo")
+                }
 
                 TrashView(
                     trashedImages: $trashedImages,
-                    recentImages: $recentImages
+                    recentImages: $recentImages,
+                    trashedCloudImageURLs: $trashedCloudImageURLs
                 )
                 .tabItem {
                     Label("Trash", systemImage: "trash")
@@ -52,5 +58,8 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(
+        cloudImageURLs: .constant([]),
+        trashedCloudImageURLs: .constant([])
+    )
 }

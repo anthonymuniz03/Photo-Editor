@@ -160,8 +160,6 @@ struct HomeScreenView: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     HomeScreenView(
         recentImages: .constant([]),

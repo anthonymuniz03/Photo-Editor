@@ -10,10 +10,12 @@ import SwiftUI
 struct TrashView: View {
     @Binding var trashedImages: [UIImage]
     @Binding var recentImages: [UIImage]
+    @Binding var trashedCloudImageURLs: [String]
     @State private var refreshID = UUID()
     @State private var showDeleteAllAlert = false
     @State private var showDeleteSingleAlert = false
     @State private var imageToDelete: UIImage?
+    @State private var cloudImageURLToDelete: String?
 
     private let photoController = PhotoController()
 
@@ -63,39 +65,68 @@ struct TrashView: View {
                     }
                     .padding([.top, .horizontal], 20)
 
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: 20) {
-                            ForEach(trashedImages.indices, id: \.self) { index in
-                                Image(uiImage: trashedImages[index])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100)
-                                    .cornerRadius(10)
-                                    .clipped()
-                                    .contextMenu {
-                                        Button {
-                                            restoreImage(image: trashedImages[index])
-                                        } label: {
-                                            Label("Restore", systemImage: "arrow.uturn.left")
-                                        }
+                    if trashedImages.isEmpty && trashedCloudImageURLs.isEmpty {
+                        Spacer()
+                        Text("No images in Trash")
+                            .font(.title2)
+                            .foregroundColor(.white.opacity(0.7))
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: columns, spacing: 20) {
+                                ForEach(trashedImages.indices, id: \.self) { index in
+                                    Image(uiImage: trashedImages[index])
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(10)
+                                        .clipped()
+                                        .contextMenu {
+                                            Button {
+                                                restoreImage(image: trashedImages[index])
+                                            } label: {
+                                                Label("Restore", systemImage: "arrow.uturn.left")
+                                            }
 
-                                        Button(role: .destructive) {
-                                            imageToDelete = trashedImages[index]
-                                            showDeleteSingleAlert = true
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Button(role: .destructive) {
+                                                imageToDelete = trashedImages[index]
+                                                showDeleteSingleAlert = true
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
                                         }
-                                    }
+                                }
+
+                                ForEach(trashedCloudImageURLs, id: \.self) { urlString in
+                                    CloudImageView(urlString: urlString) { _ in }
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(10)
+                                        .clipped()
+                                        .contextMenu {
+                                            Button {
+                                                restoreCloudImage(urlString: urlString)
+                                            } label: {
+                                                Label("Restore", systemImage: "arrow.uturn.left")
+                                            }
+
+                                            Button(role: .destructive) {
+                                                cloudImageURLToDelete = urlString
+                                                showDeleteSingleAlert = true
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
+                                }
                             }
+                            .padding()
                         }
-                        .id(refreshID)
-                        .padding(.top, 20)
                     }
                 }
             }
             .toolbarBackground(.hidden)
             .onAppear {
                 loadTrashedImages()
+                loadTrashedCloudImages()
             }
             .alert("Empty Trash", isPresented: $showDeleteAllAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -110,6 +141,8 @@ struct TrashView: View {
                 Button("Delete", role: .destructive) {
                     if let image = imageToDelete {
                         deleteSingleImage(image: image)
+                    } else if let urlString = cloudImageURLToDelete {
+                        deleteSingleCloudImage(urlString: urlString)
                     }
                 }
             } message: {
@@ -118,8 +151,6 @@ struct TrashView: View {
         }
     }
 
-    // MARK: - Functions
-
     func restoreImage(image: UIImage) {
         if let index = trashedImages.firstIndex(of: image) {
             trashedImages.remove(at: index)
@@ -127,8 +158,15 @@ struct TrashView: View {
             refreshID = UUID()
             photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
             photoController.saveImagePaths(images: trashedImages, key: "trashedImagePaths")
-            print("Restored image to recentImages. Current count: \(recentImages.count)")
-            print("Updated trashedImages count: \(trashedImages.count)")
+        }
+    }
+
+    func restoreCloudImage(urlString: String) {
+        if let index = trashedCloudImageURLs.firstIndex(of: urlString) {
+            trashedCloudImageURLs.remove(at: index)
+            photoController.addCloudImageURL(urlString: urlString)
+            refreshID = UUID()
+            photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
         }
     }
 
@@ -137,15 +175,23 @@ struct TrashView: View {
             trashedImages.remove(at: index)
             refreshID = UUID()
             photoController.saveImagePaths(images: trashedImages, key: "trashedImagePaths")
-            print("Deleted image from trash. Current trash count: \(trashedImages.count)")
+        }
+    }
+
+    func deleteSingleCloudImage(urlString: String) {
+        if let index = trashedCloudImageURLs.firstIndex(of: urlString) {
+            trashedCloudImageURLs.remove(at: index)
+            refreshID = UUID()
+            photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
         }
     }
 
     func deleteAllImages() {
         trashedImages.removeAll()
+        trashedCloudImageURLs.removeAll()
         refreshID = UUID()
         photoController.saveImagePaths(images: trashedImages, key: "trashedImagePaths")
-        print("Emptied the trash. Current trash count: \(trashedImages.count)")
+        photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
     }
 
     func loadTrashedImages() {
@@ -154,8 +200,13 @@ struct TrashView: View {
             refreshID = UUID()
         }
     }
+
+    func loadTrashedCloudImages() {
+        trashedCloudImageURLs = photoController.loadTrashedCloudImageURLs()
+        refreshID = UUID()
+    }
 }
 
 #Preview {
-    TrashView(trashedImages: .constant([]), recentImages: .constant([]))
+    TrashView(trashedImages: .constant([]), recentImages: .constant([]), trashedCloudImageURLs: .constant([]))
 }

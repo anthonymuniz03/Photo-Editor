@@ -9,7 +9,6 @@ import UIKit
 
 class PhotoController {
     
-    // MARK: - Save Image to Device
     func saveImageToDevice(image: UIImage) async throws -> URL {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .background).async {
@@ -42,13 +41,11 @@ class PhotoController {
 
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            if let image = UIImage(data: data) {
-                return image.resized(to: CGSize(width: 800, height: 800))
-            }
+            return UIImage(data: data)
         } catch {
             print("Failed to download image: \(error.localizedDescription)")
+            return nil
         }
-        return nil
     }
 
     func saveImagePaths(images: [UIImage], key: String) {
@@ -87,12 +84,10 @@ class PhotoController {
         }
     }
 
-    // MARK: - Load Trashed Images
     func loadTrashedImages(completion: @escaping ([UIImage]) -> Void) {
         loadImages(forKey: "trashedImagePaths", completion: completion)
     }
 
-    // MARK: - Convert to Standard Format
     func convertToStandardFormat(image: UIImage) -> UIImage? {
         let renderer = UIGraphicsImageRenderer(size: image.size)
         return renderer.image { _ in
@@ -100,7 +95,7 @@ class PhotoController {
         }
     }
 
-    func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
+]    func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(nil)
             return
@@ -148,22 +143,36 @@ class PhotoController {
         }.resume()
     }
 
-    func saveCloudImageURLs(urls: [String]) {
-        UserDefaults.standard.set(urls, forKey: "cloudImageURLs")
-    }
-    
-    func resetCloudImageURLs() {
-        UserDefaults.standard.removeObject(forKey: "cloudImageURLs")
-        print("Cloud image URLs reset.")
-    }
-
-    // MARK: - Load Cloud Image URLs with Pagination
     func loadCloudImageURLs(page: Int, pageSize: Int) -> [String] {
         let allImageURLs = UserDefaults.standard.stringArray(forKey: "cloudImageURLs") ?? []
         let startIndex = (page - 1) * pageSize
         let endIndex = min(startIndex + pageSize, allImageURLs.count)
 
         return startIndex < endIndex ? Array(allImageURLs[startIndex..<endIndex]) : []
+    }
+
+    func saveCloudImageURLs(urls: [String]) {
+        UserDefaults.standard.set(urls, forKey: "cloudImageURLs")
+    }
+    
+    func addCloudImageURL(urlString: String) {
+        var allImageURLs = UserDefaults.standard.stringArray(forKey: "cloudImageURLs") ?? []
+        allImageURLs.insert(urlString, at: 0)
+        UserDefaults.standard.set(allImageURLs, forKey: "cloudImageURLs")
+    }
+
+    func deleteCloudImage(urlString: String) {
+        var allCloudImageURLs = UserDefaults.standard.stringArray(forKey: "cloudImageURLs") ?? []
+        allCloudImageURLs.removeAll { $0 == urlString }
+        UserDefaults.standard.set(allCloudImageURLs, forKey: "cloudImageURLs")
+    }
+
+    func saveTrashedCloudImageURLs(urls: [String]) {
+        UserDefaults.standard.set(urls, forKey: "trashedCloudImageURLs")
+    }
+
+    func loadTrashedCloudImageURLs() -> [String] {
+        return UserDefaults.standard.stringArray(forKey: "trashedCloudImageURLs") ?? []
     }
 }
 
