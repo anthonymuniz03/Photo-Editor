@@ -150,18 +150,33 @@ struct EditImageView: View {
     }
 
     func rotateImage(by degrees: CGFloat) {
-        let radians = degrees * (.pi / 180)
-        let newSize = CGSize(width: image.size.height, height: image.size.width)
-        let renderer = UIGraphicsImageRenderer(size: newSize)
+        isLoading = true
+        let photoController = PhotoController()
 
-        let rotatedImage = renderer.image { context in
-            context.cgContext.translateBy(x: newSize.width / 2, y: newSize.height / 2)
-            context.cgContext.rotate(by: radians)
-            context.cgContext.translateBy(x: -image.size.width / 2, y: -image.size.height / 2)
-            image.draw(at: .zero)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let radians = degrees * (.pi / 180)
+            let newSize = CGSize(width: self.image.size.height, height: self.image.size.width)
+            let renderer = UIGraphicsImageRenderer(size: newSize)
+
+            let rotatedImage = renderer.image { context in
+                context.cgContext.translateBy(x: newSize.width / 2, y: newSize.height / 2)
+                context.cgContext.rotate(by: radians)
+                context.cgContext.translateBy(x: -self.image.size.width / 2, y: -self.image.size.height / 2)
+                self.image.draw(at: .zero)
+            }
+
+            if let standardImage = photoController.convertToStandardFormat(image: rotatedImage) {
+                DispatchQueue.main.async {
+                    self.image = standardImage
+                    self.isLoading = false
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    print("Failed to convert rotated image to standard format.")
+                }
+            }
         }
-
-        image = rotatedImage
     }
 
     private func uploadImageToCloudinary() {

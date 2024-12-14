@@ -64,8 +64,10 @@ struct HomeScreenView: View {
                                         if let downloadedImage = await photoController.downloadImage(from: urlString) {
                                             await saveImageToLibrary(image: downloadedImage)
                                         }
+                                        loadImages()
                                     } else if let image = imageOrUrl as? UIImage {
                                         await saveImageToLibrary(image: image)
+                                        loadImages()
                                     }
                                 }
                             },
@@ -129,8 +131,15 @@ struct HomeScreenView: View {
     }
 
     func loadImages() {
-        recentImages = photoController.loadImages(forKey: "recentImagePaths")
-        trashedImages = photoController.loadImages(forKey: "trashedImagePaths")
+        photoController.loadImages(forKey: "recentImagePaths") { images in
+            recentImages = images
+            refreshID = UUID()
+        }
+
+        photoController.loadTrashedImages { images in
+            trashedImages = images
+            refreshID = UUID()
+        }
     }
 }
 

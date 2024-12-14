@@ -66,8 +66,12 @@ struct TrashView: View {
     }
 
     func loadTrashedImages() {
-        trashedImages = photoController.loadTrashedImages()
+        photoController.loadTrashedImages { images in
+            trashedImages = images
+            refreshID = UUID()
+        }
     }
+
 }
 
 #Preview {
