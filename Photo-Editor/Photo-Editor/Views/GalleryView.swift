@@ -8,48 +8,110 @@
 import SwiftUI
 
 struct GalleryView: View {
-    @State private var albums: [AlbumID] = [AlbumID(name: "Memorabilia", images: [])]
-    @State private var showPhotoPicker = false
-    @State private var newAlbumName = ""
-    @State private var showAlbumNameAlert = false
-    
+    @State private var cloudImageURLs: [String] = []
+    @State private var selectedImage: UIImage?
+    @State private var isEditImageViewActive = false
+
+    private let photoController = PhotoController()
+
     var body: some View {
         NavigationView {
-            List {
-                ForEach(albums) { album in
-                    NavigationLink(destination: AlbumView(album: album)) {
-                        Text(album.name)
-                    }
-                }
-                
-                Section {
-                    Button(action: {
-                        showAlbumNameAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle")
-                            Text("Add New Gallery")
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                    ForEach(cloudImageURLs, id: \.self) { urlString in
+                        NavigationLink(
+                            destination: destinationView(for: urlString)
+                        ) {
+                            AsyncImage(url: URL(string: urlString)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(10)
+                                        .clipped()
+                                case .failure:
+                                    Color.gray
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(10)
+                                        .clipped()
+                                case .empty:
+                                    ProgressView()
+                                        .frame(width: 100, height: 100)
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
                         }
                     }
                 }
+                .padding()
             }
-            .navigationTitle("Gallery")
-            .listStyle(InsetGroupedListStyle())
-            .alert("Enter Album Name", isPresented: $showAlbumNameAlert) {
-                TextField("Album Name", text: $newAlbumName)
-                Button("Create") {
-                    showPhotoPicker = true
-                }
-                Button("Cancel", role: .cancel) { }
-            }
-            .sheet(isPresented: $showPhotoPicker) {
-                PhotoPickerView(onImagesSelected: { selectedImages in
-                    let newAlbum = AlbumID(name: newAlbumName, images: selectedImages)
-                    albums.append(newAlbum)
-                    newAlbumName = ""
-                })
+            .navigationTitle("Cloud Gallery")
+            .onAppear {
+                loadCloudImages()
             }
         }
+    }
+
+    @ViewBuilder
+    func destinationView(for urlString: String) -> some View {
+        ZStack {
+            ProgressView()
+            AsyncDestinationView(urlString: urlString)
+        }
+    }
+
+    struct AsyncDestinationView: View {
+        let urlString: String
+        @State private var loadedImage: UIImage?
+        @State private var isLoading = true
+
+        var body: some View {
+            Group {
+                if let image = loadedImage {
+                    EditImageView(
+                        image: image,
+                        onSave: { _ in },
+                        isLoading: .constant(false)
+                    )
+                } else if isLoading {
+                    ProgressView("Loading Image...")
+                } else {
+                    Text("Failed to load image.")
+                }
+            }
+            .onAppear {
+                loadImage(from: urlString) { image in
+                    loadedImage = image
+                    isLoading = false
+                }
+            }
+        }
+
+        func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+            guard let url = URL(string: urlString) else {
+                completion(nil)
+                return
+            }
+
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        completion(image)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(nil)
+                    }
+                }
+            }.resume()
+        }
+    }
+
+    func loadCloudImages() {
+        cloudImageURLs = photoController.loadCloudImageURLs()
     }
 }
 
