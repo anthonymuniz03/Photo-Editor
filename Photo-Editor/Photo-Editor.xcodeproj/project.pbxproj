@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D502D06B48400D41170 /* PhotoController.swift */; };
+		EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */; };
 		EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */; };
 		EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315E2CC5BBA100680F9F /* GalleryView.swift */; };
 		EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */; };
 		EB84AD362CD86F5300B9CA3F /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */; };
 		EB84AD382CD872B700B9CA3F /* EditImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD372CD872B700B9CA3F /* EditImageView.swift */; };
-		EB84AD3A2CD8AFC600B9CA3F /* AlbumID.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD392CD8AFC600B9CA3F /* AlbumID.swift */; };
-		EB84AD3C2CD8B08900B9CA3F /* AlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD3B2CD8B08900B9CA3F /* AlbumView.swift */; };
 		EB84AD3E2CD8B0C700B9CA3F /* PhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB84AD3D2CD8B0C700B9CA3F /* PhotoPickerView.swift */; };
 		EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */; };
 		EBDD479D2CB884A2001823C6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD479C2CB884A2001823C6 /* ContentView.swift */; };
@@ -21,20 +21,19 @@
 		EBDD47A22CB884AD001823C6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBDD47A12CB884AD001823C6 /* Preview Assets.xcassets */; };
 		EBDD47A92CBC8C59001823C6 /* MainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD47A82CBC8C59001823C6 /* MainButton.swift */; };
 		EBE8573E2CC5C8E400E862B2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE8573D2CC5C8E400E862B2 /* SettingsView.swift */; };
-		EBE857412CC5CDC000E862B2 /* MemorabiliaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857402CC5CDC000E862B2 /* MemorabiliaView.swift */; };
 		EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857422CC5CED000E862B2 /* TrashView.swift */; };
 		EBE857452CC5CF0B00E862B2 /* PlaceHolderImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */; };
 		EBE857472CC61E3800E862B2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EB0E9D502D06B48400D41170 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhotoController.swift; path = /Users/anthonymuniz/Documents/PhotoController.swift; sourceTree = "<absolute>"; };
+		EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenView.swift; sourceTree = "<group>"; };
 		EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
 		EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLibrary.swift; sourceTree = "<group>"; };
 		EB73315E2CC5BBA100680F9F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		EB84AD372CD872B700B9CA3F /* EditImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageView.swift; sourceTree = "<group>"; };
-		EB84AD392CD8AFC600B9CA3F /* AlbumID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumID.swift; sourceTree = "<group>"; };
-		EB84AD3B2CD8B08900B9CA3F /* AlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumView.swift; sourceTree = "<group>"; };
 		EB84AD3D2CD8B0C700B9CA3F /* PhotoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerView.swift; sourceTree = "<group>"; };
 		EBDD47972CB884A2001823C6 /* Photo-Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo-Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo_EditorApp.swift; sourceTree = "<group>"; };
@@ -43,7 +42,6 @@
 		EBDD47A12CB884AD001823C6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EBDD47A82CBC8C59001823C6 /* MainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButton.swift; sourceTree = "<group>"; };
 		EBE8573D2CC5C8E400E862B2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		EBE857402CC5CDC000E862B2 /* MemorabiliaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorabiliaView.swift; sourceTree = "<group>"; };
 		EBE857422CC5CED000E862B2 /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
 		EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolderImageView.swift; sourceTree = "<group>"; };
 		EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -60,6 +58,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EB0E9D4F2D06B46600D41170 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EB0E9D502D06B48400D41170 /* PhotoController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		EB7331592CC5AF7400680F9F /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -69,8 +75,8 @@
 				EBE8573D2CC5C8E400E862B2 /* SettingsView.swift */,
 				EBE857422CC5CED000E862B2 /* TrashView.swift */,
 				EB84AD372CD872B700B9CA3F /* EditImageView.swift */,
-				EB84AD3B2CD8B08900B9CA3F /* AlbumView.swift */,
 				EB84AD3D2CD8B0C700B9CA3F /* PhotoPickerView.swift */,
+				EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -105,14 +111,13 @@
 		EBDD47992CB884A2001823C6 /* Photo-Editor */ = {
 			isa = PBXGroup;
 			children = (
-				EBE8573F2CC5CD9B00E862B2 /* TempViews */,
+				EB0E9D4F2D06B46600D41170 /* Controllers */,
 				EB7331602CC5BBB600680F9F /* Content */,
 				EB7331592CC5AF7400680F9F /* Views */,
 				EBDD479A2CB884A2001823C6 /* Photo_EditorApp.swift */,
 				EBDD479E2CB884AD001823C6 /* Assets.xcassets */,
 				EBE857462CC61E3800E862B2 /* Launch Screen.storyboard */,
 				EBDD47A02CB884AD001823C6 /* Preview Content */,
-				EB84AD392CD8AFC600B9CA3F /* AlbumID.swift */,
 			);
 			path = "Photo-Editor";
 			sourceTree = "<group>";
@@ -123,14 +128,6 @@
 				EBDD47A12CB884AD001823C6 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		EBE8573F2CC5CD9B00E862B2 /* TempViews */ = {
-			isa = PBXGroup;
-			children = (
-				EBE857402CC5CDC000E862B2 /* MemorabiliaView.swift */,
-			);
-			path = TempViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,7 +201,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB84AD3A2CD8AFC600B9CA3F /* AlbumID.swift in Sources */,
 				EBE8573E2CC5C8E400E862B2 /* SettingsView.swift in Sources */,
 				EB84AD362CD86F5300B9CA3F /* PhotoPicker.swift in Sources */,
 				EB84AD382CD872B700B9CA3F /* EditImageView.swift in Sources */,
@@ -213,11 +209,11 @@
 				EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */,
 				EBE857452CC5CF0B00E862B2 /* PlaceHolderImageView.swift in Sources */,
 				EBDD479D2CB884A2001823C6 /* ContentView.swift in Sources */,
-				EBE857412CC5CDC000E862B2 /* MemorabiliaView.swift in Sources */,
-				EB84AD3C2CD8B08900B9CA3F /* AlbumView.swift in Sources */,
 				EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */,
 				EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */,
 				EB84AD3E2CD8B0C700B9CA3F /* PhotoPickerView.swift in Sources */,
+				EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */,
+				EB0E9D512D06B48400D41170 /* PhotoController.swift in Sources */,
 				EBDD47A92CBC8C59001823C6 /* MainButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -356,6 +352,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need access to save images to your library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you select images";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -388,6 +385,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoLab;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need access to save images to your library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you select images";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

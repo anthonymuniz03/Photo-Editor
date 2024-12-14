@@ -8,46 +8,94 @@
 import SwiftUI
 
 struct GalleryView: View {
-    @State private var albums: [AlbumID] = [AlbumID(name: "Memorabilia", images: [])]
-    @State private var showPhotoPicker = false
-    @State private var newAlbumName = ""
-    @State private var showAlbumNameAlert = false
-    
+    @State private var cloudImageURLs: [String] = []
+    @State private var currentPage = 1
+    @State private var isLoading = false
+    @State private var hasMorePages = true
+
+    private let pageSize = 12
+    private let photoController = PhotoController()
+
     var body: some View {
         NavigationView {
-            List {
-                ForEach(albums) { album in
-                    NavigationLink(destination: AlbumView(album: album)) {
-                        Text(album.name)
-                    }
-                }
-                
-                Section {
-                    Button(action: {
-                        showAlbumNameAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle")
-                            Text("Add New Gallery")
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                    ForEach(cloudImageURLs, id: \.self) { urlString in
+                        AsyncImage(url: URL(string: urlString)) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .cornerRadius(10)
+                                    .clipped()
+                            case .failure:
+                                Color.gray
+                                    .frame(width: 100, height: 100)
+                                    .cornerRadius(10)
+                                    .clipped()
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                            @unknown default:
+                                EmptyView()
+                            }
                         }
                     }
+
+                    if isLoading {
+                        ProgressView("Loading more images...")
+                            .padding()
+                    }
+                }
+                .padding()
+                .onAppear {
+                    loadCloudImages()
+                }
+                .onScrollToEnd {
+                    loadMoreImages()
                 }
             }
-            .navigationTitle("Gallery")
-            .listStyle(InsetGroupedListStyle())
-            .alert("Enter Album Name", isPresented: $showAlbumNameAlert) {
-                TextField("Album Name", text: $newAlbumName)
-                Button("Create") {
-                    showPhotoPicker = true
+            .navigationTitle("Cloud Gallery")
+        }
+    }
+
+    func loadCloudImages() {
+        guard !isLoading && hasMorePages else { return }
+        isLoading = true
+
+        DispatchQueue.global(qos: .background).async {
+            let newImageURLs = photoController.loadCloudImageURLs(page: currentPage, pageSize: pageSize)
+            DispatchQueue.main.async {
+                if newImageURLs.isEmpty {
+                    hasMorePages = false
+                } else {
+                    cloudImageURLs.append(contentsOf: newImageURLs)
+                    currentPage += 1
                 }
-                Button("Cancel", role: .cancel) { }
+                isLoading = false
             }
-            .sheet(isPresented: $showPhotoPicker) {
-                PhotoPickerView(onImagesSelected: { selectedImages in
-                    let newAlbum = AlbumID(name: newAlbumName, images: selectedImages)
-                    albums.append(newAlbum)
-                    newAlbumName = ""
-                })
+        }
+    }
+
+    func loadMoreImages() {
+        loadCloudImages()
+    }
+}
+
+extension View {
+    func onScrollToEnd(perform action: @escaping () -> Void) -> some View {
+        GeometryReader { geometry in
+            VStack {
+                self
+                Spacer(minLength: 0).onAppear {
+                    let contentHeight = geometry.size.height
+                    let screenHeight = UIScreen.main.bounds.height
+                    if contentHeight <= screenHeight {
+                        action()
+                    }
+                }
             }
         }
     }

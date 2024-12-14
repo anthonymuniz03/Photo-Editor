@@ -37,12 +37,26 @@ struct PhotoPicker: UIViewControllerRepresentable {
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
             
-            guard let provider = results.first?.itemProvider, provider.canLoadObject(ofClass: UIImage.self) else { return }
+            guard let provider = results.first?.itemProvider else {
+                print("No item provider found.")
+                return
+            }
             
-            provider.loadObject(ofClass: UIImage.self) { image, error in
-                DispatchQueue.main.async {
-                    self.parent.selectedImage = image as? UIImage
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                provider.loadObject(ofClass: UIImage.self) { image, error in
+                    if let image = image as? UIImage {
+                        DispatchQueue.main.async {
+                            self.parent.selectedImage = image
+                            print("Image selected and set successfully.")
+                        }
+                    } else if let error = error {
+                        print("Error loading image: \(error.localizedDescription)")
+                    } else {
+                        print("Failed to load image.")
+                    }
                 }
+            } else {
+                print("Selected item cannot be loaded as UIImage.")
             }
         }
     }
