@@ -17,9 +17,7 @@ struct EditImageView: View {
     @State private var uploadStatusMessage: String?
     @State private var showSaveConfirmation = false
     @State private var showErrorAlert = false
-    @State private var showTextInput = false
     @State private var showFilterDrawer = false
-    @State private var inputText: String = ""
     @State private var originalImage: UIImage
     @State private var selectedFilter: FilterType = .original
     @State private var rotationAngle: CGFloat = 0
@@ -61,17 +59,13 @@ struct EditImageView: View {
                 .padding()
 
             HStack(spacing: 20) {
-                Button("Add Text") {
-                    showTextInput = true
-                }
-                .buttonStyle(.borderedProminent)
-
                 Button("Select Filter") {
                     showFilterDrawer.toggle()
                 }
                 .buttonStyle(.borderedProminent)
             }
             .padding()
+
 
             HStack {
                 Button(action: uploadImageToCloudinary) {
@@ -292,28 +286,6 @@ struct FilterPreview: View {
                 .frame(width: 80, height: 80)
                 .cornerRadius(8)
             Text(label)
-        }
-    }
-}
-
-extension View {
-    func textFieldAlert(isPresented: Binding<Bool>, title: String, text: Binding<String>, onConfirm: @escaping () -> Void) -> some View {
-        TextFieldAlertWrapper(isPresented: isPresented, title: title, text: text, onConfirm: onConfirm, content: self)
-    }
-}
-
-struct TextFieldAlertWrapper<Content: View>: View {
-    @Binding var isPresented: Bool
-    let title: String
-    @Binding var text: String
-    let onConfirm: () -> Void
-    let content: Content
-
-    var body: some View {
-        content.alert(title, isPresented: $isPresented) {
-            TextField("Enter text", text: $text)
-            Button("OK", action: onConfirm)
-            Button("Cancel", role: .cancel) {}
         }
     }
 }
