@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct Photo_EditorApp: App {
     @State private var isSplashScreenVisible = true
+    @State private var isOnboardingComplete = UserDefaults.standard.bool(forKey: "isOnboardingComplete")
     @State private var cloudImageURLs: [String] = []
     @State private var trashedCloudImageURLs: [String] = []
 
@@ -50,6 +51,8 @@ struct Photo_EditorApp: App {
                         isSplashScreenVisible = false
                     }
                 }
+            } else if !isOnboardingComplete {
+                OnboardingView(isOnboardingComplete: $isOnboardingComplete)
             } else {
                 ContentView(
                     cloudImageURLs: $cloudImageURLs,
