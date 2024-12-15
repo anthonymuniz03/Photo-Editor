@@ -13,6 +13,7 @@ struct EditImageView: View {
     @State private var filterController = EditImageController()
     var onSave: (Any) -> Void
     @Binding var isLoading: Bool
+    @State private var imageID = UUID()
     @State private var uploadStatusMessage: String?
     @State private var showSaveConfirmation = false
     @State private var showErrorAlert = false
@@ -53,6 +54,7 @@ struct EditImageView: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
+                .id(imageID)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
 
@@ -101,33 +103,45 @@ struct EditImageView: View {
         }
     }
 
-    // MARK: - Rotation Actions
-
     func rotateImageLeft() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let rotatedImage = filterController.rotateImageLeft(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
-            DispatchQueue.main.async {
-                image = rotatedImage
-            }
-        }
+        rotationAngle = (rotationAngle - 90).truncatingRemainder(dividingBy: 360)
+        if rotationAngle < 0 { rotationAngle += 360 }
+        applyRotation()
     }
 
     func rotateImageRight() {
+        rotationAngle = (rotationAngle + 90).truncatingRemainder(dividingBy: 360)
+        applyRotation()
+    }
+
+    func applyRotation() {
+        DispatchQueue.main.async {
+            image = filterController.applyRotation(to: currentFilteredImage, rotationAngle: rotationAngle)
+        }
+    }
+
+    func applyFilterAndRotation(_ filter: FilterType) {
         DispatchQueue.global(qos: .userInitiated).async {
-            let rotatedImage = filterController.rotateImageRight(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
+            var filteredImage: UIImage
+
+            if filter == .original {
+                filteredImage = originalImage
+            } else {
+                filteredImage = filterController.applyFilter(to: originalImage, filter: filter)
+            }
+
+            let rotatedImage = filterController.applyRotation(to: filteredImage, rotationAngle: rotationAngle)
+
             DispatchQueue.main.async {
-                image = rotatedImage
+                self.image = rotatedImage
+                self.currentFilteredImage = rotatedImage
+                self.imageID = UUID()
             }
         }
     }
 
-    // MARK: - Filter and Rotation
 
-    func applyFilterAndRotation(_ filter: FilterType) {
-        image = filterController.applyFilterAndRotation(to: originalImage, filter: filter, rotationAngle: rotationAngle)
-        currentFilteredImage = image
-    }
-    
+
     private func uploadImageToCloudinary() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
