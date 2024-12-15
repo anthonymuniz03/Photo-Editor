@@ -104,11 +104,21 @@ struct EditImageView: View {
     // MARK: - Rotation Actions
 
     func rotateImageLeft() {
-        image = filterController.rotateImageLeft(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let rotatedImage = filterController.rotateImageLeft(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
+            DispatchQueue.main.async {
+                image = rotatedImage
+            }
+        }
     }
 
     func rotateImageRight() {
-        image = filterController.rotateImageRight(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let rotatedImage = filterController.rotateImageRight(currentImage: currentFilteredImage, currentAngle: &rotationAngle)
+            DispatchQueue.main.async {
+                image = rotatedImage
+            }
+        }
     }
 
     // MARK: - Filter and Rotation

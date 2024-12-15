@@ -15,6 +15,8 @@ struct GalleryView: View {
     @State private var isRefreshing = false
     @State private var selectedImage: UIImage?
     @State private var showEditView = false
+    @State private var isLoading = false
+    @State private var error: ErrorWrapper?
 
     private let pageSize = 12
     private let photoController = PhotoController()
@@ -28,77 +30,12 @@ struct GalleryView: View {
                     .ignoresSafeArea()
 
                 VStack {
-                    HStack {
-                        Text("Cloud Save")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 20)
-                            .background(
-                                Capsule()
-                                    .fill(Color.white.opacity(0.3))
-                            )
-
-                        Spacer()
-
-                        Button(action: {
-                            refreshGallery()
-                        }) {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .background(
-                                    Circle()
-                                        .fill(Color.white.opacity(0.3))
-                                )
-                        }
-                    }
-                    .padding([.top, .horizontal], 20)
+                    headerView
 
                     if cloudImageURLs.isEmpty {
-                        VStack(spacing: 10) {
-                            Spacer()
-
-                            Text("Don't worry!")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white.opacity(0.9))
-
-                            Text("If you ever accidentally delete an image or clear your cache, a copy will be saved here in the cloud!")
-                                .font(.headline)
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.white.opacity(0.7))
-                                .padding(.horizontal, 30)
-
-                            Spacer()
-                        }
+                        emptyStateView
                     } else {
-                        ScrollView {
-                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                                ForEach(cloudImageURLs, id: \.self) { urlString in
-                                    CloudImageView(urlString: urlString) { image in
-                                        if let resizedImage = image.resized(to: CGSize(width: 800, height: 800)) {
-                                            selectedImage = resizedImage
-                                            showEditView = true
-                                        } else {
-                                            print("Failed to resize image.")
-                                        }
-                                    }
-                                    .contextMenu {
-                                        Button(role: .destructive) {
-                                            deleteCloudImage(urlString: urlString)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                            }
-                            .padding()
-                            .refreshable {
-                                refreshGallery()
-                            }
-                        }
+                        galleryGridView
                     }
                 }
                 .navigationDestination(isPresented: $showEditView) {
@@ -106,31 +43,115 @@ struct GalleryView: View {
                         EditImageView(
                             image: image,
                             onSave: { imageOrUrl in
-                                Task {
-                                    if let urlString = imageOrUrl as? String {
-                                        if let downloadedImage = await photoController.downloadImage(from: urlString) {
-                                            await saveImageToLibrary(image: downloadedImage)
-                                        }
-                                    } else if let image = imageOrUrl as? UIImage {
-                                        await saveImageToLibrary(image: image)
-                                    }
-                                    loadCloudImages()
-                                }
+                                handleSave(imageOrUrl: imageOrUrl)
                             },
-                            isLoading: .constant(false)
+                            isLoading: $isLoading
                         )
                     }
+                }
+
+                if isLoading {
+                    ProgressView("Loading...")
+                        .progressViewStyle(.circular)
+                        .padding()
+                        .background(Color.white.opacity(0.8))
+                        .cornerRadius(12)
                 }
             }
             .onAppear {
                 loadCloudImages()
             }
+            .alert(item: $error) { error in
+                Alert(title: Text("Error"), message: Text(error.message), dismissButton: .default(Text("OK")))
+            }
         }
     }
+
+    // MARK: - Header View
+
+    private var headerView: some View {
+        HStack {
+            Text("Cloud Save")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 20)
+                .background(
+                    Capsule()
+                        .fill(Color.white.opacity(0.3))
+                )
+
+            Spacer()
+
+            Button(action: refreshGallery) {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .background(
+                        Circle()
+                            .fill(Color.white.opacity(0.3))
+                    )
+            }
+        }
+        .padding([.top, .horizontal], 20)
+    }
+
+    // MARK: - Empty State View
+
+    private var emptyStateView: some View {
+        VStack(spacing: 10) {
+            Spacer()
+            Text("Don't worry!")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.white.opacity(0.9))
+            Text("If you ever accidentally delete an image or clear your cache, a copy will be saved here in the cloud!")
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.white.opacity(0.7))
+                .padding(.horizontal, 30)
+            Spacer()
+        }
+    }
+
+    // MARK: - Gallery Grid View
+
+    private var galleryGridView: some View {
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                ForEach(cloudImageURLs, id: \.self) { urlString in
+                    CloudImageView(urlString: urlString) { image in
+                        if let resizedImage = image.resized(to: CGSize(width: 800, height: 800)) {
+                            selectedImage = resizedImage
+                            showEditView = true
+                        } else {
+                            error = ErrorWrapper(message: "Failed to download image.")
+                        }
+                    }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            deleteCloudImage(urlString: urlString)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                }
+            }
+            .padding()
+            .refreshable {
+                refreshGallery()
+            }
+        }
+    }
+
+    // MARK: - Load Cloud Images
 
     func loadCloudImages() {
         cloudImageURLs = photoController.loadCloudImageURLs(page: currentPage, pageSize: pageSize)
     }
+
+    // MARK: - Refresh Gallery
 
     func refreshGallery() {
         isRefreshing = true
@@ -140,21 +161,49 @@ struct GalleryView: View {
         }
     }
 
+    // MARK: - Delete Cloud Image
+
     func deleteCloudImage(urlString: String) {
-        photoController.deleteCloudImage(urlString: urlString)
-        cloudImageURLs.removeAll { $0 == urlString }
-        trashedCloudImageURLs.append(urlString)
-        photoController.saveCloudImageURLs(urls: cloudImageURLs)
-        photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
+        isLoading = true
+        Task {
+            photoController.deleteCloudImage(urlString: urlString)
+            cloudImageURLs.removeAll { $0 == urlString }
+            trashedCloudImageURLs.append(urlString)
+            photoController.saveCloudImageURLs(urls: cloudImageURLs)
+            photoController.saveTrashedCloudImageURLs(urls: trashedCloudImageURLs)
+            isLoading = false
+        }
     }
 
-    func saveImageToLibrary(image: UIImage) async {
-        photoController.saveImageToDevice(image: image) { error in
-            if let error = error {
-                print("Failed to save image: \(error.localizedDescription)")
-            } else {
-                print("Image saved successfully!")
+    // MARK: - Handle Save
 
+    func handleSave(imageOrUrl: Any) {
+        if let urlString = imageOrUrl as? String {
+            Task {
+                if let downloadedImage = await photoController.downloadImage(from: urlString) {
+                    await saveImageToLibrary(image: downloadedImage)
+                } else {
+                    error = ErrorWrapper(message: "Failed to download image.")
+                }
+            }
+        } else if let image = imageOrUrl as? UIImage {
+            Task {
+                await saveImageToLibrary(image: image)
+            }
+        }
+
+        loadCloudImages()
+        isLoading = false
+    }
+
+
+    // MARK: - Save Image to Library
+
+    func saveImageToLibrary(image: UIImage) async {
+        photoController.saveImageToDevice(image: image) { saveError in
+            if let saveError = saveError {
+                error = ErrorWrapper(message: "Failed to save image: \(saveError.localizedDescription)")
+            } else {
                 Task {
                     await MainActor.run {
                         recentImages.append(image)
@@ -165,7 +214,9 @@ struct GalleryView: View {
             }
         }
     }
+
 }
+
 
 // MARK: - CloudImageView
 
@@ -213,6 +264,11 @@ struct CloudImageView: View {
             }
         }
     }
+}
+
+struct ErrorWrapper: Identifiable {
+    let id = UUID()
+    let message: String
 }
 
 // MARK: - Preview
