@@ -84,13 +84,18 @@ struct HomeScreenView: View {
                         onSave: { imageOrUrl in
                             Task {
                                 if let urlString = imageOrUrl as? String {
+                                    if let downloadedImage = await photoController.downloadImage(from: urlString) {
+                                        await MainActor.run {
+                                            recentImages.append(downloadedImage) // Save the edited image, not the original
+                                            photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                                        }
+                                        loadImages()
+                                    }
+                                } else if let editedImage = imageOrUrl as? UIImage {
                                     await MainActor.run {
-                                        recentImages.append(image)
+                                        recentImages.append(editedImage) // Save the edited image
                                         photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
                                     }
-                                    loadImages()
-                                } else if let image = imageOrUrl as? UIImage {
-                                    await saveImageToLibrary(image: image)
                                     loadImages()
                                 }
                             }
