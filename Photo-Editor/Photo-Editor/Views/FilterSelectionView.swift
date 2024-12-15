@@ -12,25 +12,36 @@ struct FilterSelectionView: View {
     @Binding var selectedFilter: FilterType
     var onSelect: (FilterType) -> Void
 
+    let filters: [(type: FilterType, label: String, color: Color)] = [
+        (.original, "Original", Color.gray),
+        (.cold, "Cold", Color.blue),
+        (.warm, "Warm", Color.orange),
+        (.red, "Red", Color.red),
+        (.purple, "Purple", Color.purple)
+    ]
+
     var body: some View {
         VStack {
             Text("Select a Filter")
                 .font(.headline)
-                .padding()
+                .padding(.bottom, 10)
 
-            HStack(spacing: 20) {
-                filterButton(for: .original, label: "Original", color: Color.gray)
-                filterButton(for: .cold, label: "Cold", color: Color.blue)
-                filterButton(for: .warm, label: "Warm", color: Color.orange)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(filters, id: \.type) { filter in
+                        filterButton(for: filter.type, label: filter.label, color: filter.color)
+                    }
+                }
+                .padding(.horizontal, 16)
             }
-            .padding()
+            .frame(height: 120)
         }
     }
 
     func filterButton(for filter: FilterType, label: String, color: Color) -> some View {
         VStack {
             color
-                .frame(width: selectedFilter == filter ? 100 : 80, height: selectedFilter == filter ? 100 : 80)
+                .frame(width: selectedFilter == filter ? 80 : 70, height: selectedFilter == filter ? 80 : 70)
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
@@ -38,7 +49,7 @@ struct FilterSelectionView: View {
                 )
             Text(label)
                 .font(.caption)
-                .foregroundColor(.white)
+                .foregroundColor(.black)
         }
         .onTapGesture {
             selectedFilter = filter
@@ -47,22 +58,14 @@ struct FilterSelectionView: View {
     }
 }
 
-struct FilterPreview: View {
-    let image: UIImage
-    let label: String
-    let applyFilter: (UIImage) -> UIImage
-
-    var body: some View {
-        VStack {
-            Image(uiImage: applyFilter(image))
-                .resizable()
-                .frame(width: 80, height: 80)
-                .cornerRadius(8)
-            Text(label)
-        }
-    }
+enum FilterType {
+    case original, cold, warm, red, purple
 }
 
-enum FilterType {
-    case original, cold, warm
+#Preview {
+    FilterSelectionView(
+        currentImage: UIImage(named: "sampleImage") ?? UIImage(),
+        selectedFilter: .constant(.original),
+        onSelect: { _ in }
+    )
 }

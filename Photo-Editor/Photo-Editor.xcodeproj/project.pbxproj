@@ -11,6 +11,7 @@
 		EB4317FF2D0EE580000138C7 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4317FE2D0EE580000138C7 /* OnboardingView.swift */; };
 		EB4318082D0F11B3000138C7 /* CloudinaryImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4318072D0F11B3000138C7 /* CloudinaryImageView.swift */; };
 		EB43180A2D0F1493000138C7 /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4318092D0F1493000138C7 /* ImageSaver.swift */; };
+		EB43180C2D0F238B000138C7 /* CloudImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB43180B2D0F238B000138C7 /* CloudImageView.swift */; };
 		EB4E13DA2D0DBA38000FD206 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13D92D0DBA38000FD206 /* PhotoController.swift */; };
 		EB4E13DC2D0E3654000FD206 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */; };
 		EB4E13E82D0E79D0000FD206 /* FilterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */; };
@@ -36,6 +37,7 @@
 		EB4317FE2D0EE580000138C7 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		EB4318072D0F11B3000138C7 /* CloudinaryImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudinaryImageView.swift; sourceTree = "<group>"; };
 		EB4318092D0F1493000138C7 /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
+		EB43180B2D0F238B000138C7 /* CloudImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudImageView.swift; sourceTree = "<group>"; };
 		EB4E13D92D0DBA38000FD206 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoController.swift; sourceTree = "<group>"; };
 		EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSelectionView.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */,
 				EB4317FE2D0EE580000138C7 /* OnboardingView.swift */,
 				EB4318072D0F11B3000138C7 /* CloudinaryImageView.swift */,
+				EB43180B2D0F238B000138C7 /* CloudImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				EB84AD382CD872B700B9CA3F /* EditImageView.swift in Sources */,
 				EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */,
 				EB43180A2D0F1493000138C7 /* ImageSaver.swift in Sources */,
+				EB43180C2D0F238B000138C7 /* CloudImageView.swift in Sources */,
 				EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */,
 				EBE857452CC5CF0B00E862B2 /* PlaceHolderImageView.swift in Sources */,
 				EBDD479D2CB884A2001823C6 /* ContentView.swift in Sources */,

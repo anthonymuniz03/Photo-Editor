@@ -21,12 +21,33 @@ class EditImageController {
             return applyTemperatureFilter(to: image, temperature: 4500)
         case .warm:
             return applyTemperatureFilter(to: image, temperature: 8500)
+        case .red:
+            return applyColorTint(to: image, color: .red)
+        case .purple:
+            return applyColorTint(to: image, color: .purple)
         }
     }
 
     func applyLowQualityFilter(to image: UIImage, filter: FilterType) -> UIImage {
         return applyTemperatureFilter(to: image, temperature: filter == .cold ? 4500 : 8500, targetSize: CGSize(width: 400, height: 400))
     }
+    
+    private func applyColorTint(to image: UIImage, color: UIColor, intensity: CGFloat = 0.7) -> UIImage {
+        guard let ciImage = CIImage(image: image) else { return image }
+
+        let filter = CIFilter.colorMonochrome()
+        filter.inputImage = ciImage
+        filter.color = CIColor(color: color)
+        filter.intensity = Float(intensity)
+
+        guard let outputImage = filter.outputImage,
+              let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent) else {
+            return image
+        }
+
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+    }
+
 
     func applyFilterAndRotation(to image: UIImage, filter: FilterType, rotationAngle: CGFloat) -> UIImage {
         let filteredImage = applyFilter(to: image, filter: filter)
