@@ -146,10 +146,10 @@ struct EditImageView: View {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
 
-        PhotoController().uploadImageToCloudinary(image: image) { urlString in
+        PhotoController().uploadImageToCloudinary(image: image) { uploadedUrl in
             DispatchQueue.main.async {
                 isLoading = false
-                if let uploadedUrl = urlString {
+                if let uploadedUrl = uploadedUrl {
                     uploadStatusMessage = "Upload successful!"
                     onSave(uploadedUrl)
                     dismiss()
@@ -160,7 +160,7 @@ struct EditImageView: View {
             }
         }
     }
-    
+
     private func saveImageToDevice() {
         let photoController = PhotoController()
         

@@ -84,8 +84,9 @@ struct HomeScreenView: View {
                         onSave: { imageOrUrl in
                             Task {
                                 if let urlString = imageOrUrl as? String {
-                                    if let downloadedImage = await photoController.downloadImage(from: urlString) {
-                                        await saveImageToLibrary(image: downloadedImage)
+                                    await MainActor.run {
+                                        recentImages.append(image)
+                                        photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
                                     }
                                     loadImages()
                                 } else if let image = imageOrUrl as? UIImage {
@@ -96,6 +97,7 @@ struct HomeScreenView: View {
                         },
                         isLoading: $isLoading
                     )
+
                 }
             }
             .toolbarBackground(.clear, for: .navigationBar)
