@@ -10,6 +10,8 @@
 		EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */; };
 		EB4E13DA2D0DBA38000FD206 /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13D92D0DBA38000FD206 /* PhotoController.swift */; };
 		EB4E13DC2D0E3654000FD206 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */; };
+		EB4E13E82D0E79D0000FD206 /* FilterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */; };
+		EB4E13EA2D0E7B15000FD206 /* EditImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4E13E92D0E7B15000FD206 /* EditImageController.swift */; };
 		EB73315B2CC5AF9E00680F9F /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */; };
 		EB73315F2CC5BBA100680F9F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315E2CC5BBA100680F9F /* GalleryView.swift */; };
 		EB7331622CC5BC7A00680F9F /* HomeLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */; };
@@ -31,6 +33,8 @@
 		EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenView.swift; sourceTree = "<group>"; };
 		EB4E13D92D0DBA38000FD206 /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoController.swift; sourceTree = "<group>"; };
 		EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSelectionView.swift; sourceTree = "<group>"; };
+		EB4E13E92D0E7B15000FD206 /* EditImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageController.swift; sourceTree = "<group>"; };
 		EB73315A2CC5AF9E00680F9F /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
 		EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLibrary.swift; sourceTree = "<group>"; };
 		EB73315E2CC5BBA100680F9F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
@@ -64,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				EB4E13D92D0DBA38000FD206 /* PhotoController.swift */,
+				EB4E13E92D0E7B15000FD206 /* EditImageController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -81,6 +86,7 @@
 				EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */,
 				EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */,
 				EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */,
+				EB4E13E72D0E79D0000FD206 /* FilterSelectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -215,7 +221,9 @@
 				EBDD479D2CB884A2001823C6 /* ContentView.swift in Sources */,
 				EBDD479B2CB884A2001823C6 /* Photo_EditorApp.swift in Sources */,
 				EBE857432CC5CED000E862B2 /* TrashView.swift in Sources */,
+				EB4E13E82D0E79D0000FD206 /* FilterSelectionView.swift in Sources */,
 				EB4E13DA2D0DBA38000FD206 /* PhotoController.swift in Sources */,
+				EB4E13EA2D0E7B15000FD206 /* EditImageController.swift in Sources */,
 				EB84AD3E2CD8B0C700B9CA3F /* PhotoPickerView.swift in Sources */,
 				EB0E9D532D092A3C00D41170 /* LoadingScreenView.swift in Sources */,
 				EBDD47A92CBC8C59001823C6 /* MainButton.swift in Sources */,
