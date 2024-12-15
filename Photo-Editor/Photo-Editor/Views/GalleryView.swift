@@ -149,15 +149,20 @@ struct GalleryView: View {
     }
 
     func saveImageToLibrary(image: UIImage) async {
-        do {
-            try await photoController.saveImageToDevice(image: image)
-            await MainActor.run {
-                recentImages.append(image)
-                photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+        photoController.saveImageToDevice(image: image) { error in
+            if let error = error {
+                print("Failed to save image: \(error.localizedDescription)")
+            } else {
+                print("Image saved successfully!")
+
+                Task {
+                    await MainActor.run {
+                        recentImages.append(image)
+                        photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                        print("Image saved to library and added to recent images.")
+                    }
+                }
             }
-            print("Image saved to library and added to recent images.")
-        } catch {
-            print("Failed to save image: \(error.localizedDescription)")
         }
     }
 }

@@ -119,20 +119,23 @@ struct HomeScreenView: View {
     }
 
     func saveImageToLibrary(image: UIImage) async {
-        do {
-            print("Starting to save image...")
-            let savedPath = try await photoController.saveImageToDevice(image: image)
-            print("Image saved at: \(savedPath)")
+        print("Starting to save image...")
 
-            await MainActor.run {
-                recentImages.append(image)
-                refreshID = UUID()
-                photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
-                print("Image saved and added to recentImages.")
-                print("Current recentImages count: \(recentImages.count)")
+        photoController.saveImageToDevice(image: image) { error in
+            if let error = error {
+                print("Failed to save image: \(error.localizedDescription)")
+            } else {
+                print("Image saved successfully!")
+
+                Task {
+                    await MainActor.run {
+                        recentImages.append(image)
+                        photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                        print("Image saved and added to recent images.")
+                        print("Current recent images count: \(recentImages.count)")
+                    }
+                }
             }
-        } catch {
-            print("Failed to save image: \(error.localizedDescription)")
         }
     }
 

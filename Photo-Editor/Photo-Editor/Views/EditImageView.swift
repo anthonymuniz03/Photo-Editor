@@ -138,17 +138,21 @@ struct EditImageView: View {
     }
     
     private func saveImageToDevice() {
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized || status == .limited {
-                DispatchQueue.main.async {
-                    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        let photoController = PhotoController()
+        
+        photoController.saveImageToDevice(image: image) { error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    uploadStatusMessage = "Failed to save image: \(error.localizedDescription)"
+                    showErrorAlert = true
+                } else {
+                    uploadStatusMessage = "Image successfully saved to your Photo Library."
                     showSaveConfirmation = true
                 }
-            } else {
-                showErrorAlert = true
             }
         }
     }
+
 }
 
 #Preview {

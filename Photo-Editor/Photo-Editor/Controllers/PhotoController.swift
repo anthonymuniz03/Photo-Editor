@@ -6,30 +6,30 @@
 //
 
 import UIKit
+import Photos
 
 class PhotoController {
     
-    func saveImageToDevice(image: UIImage) async throws -> URL {
-        return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.global(qos: .background).async {
-                do {
-                    let fileManager = FileManager.default
-                    let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-                    let fileName = UUID().uuidString + ".jpg"
-                    let fileURL = documents.appendingPathComponent(fileName)
-                    print("Documents directory: \(documents.path)")
-
-                    guard let data = image.jpegData(compressionQuality: 0.8) else {
-                        continuation.resume(throwing: NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create JPEG data"]))
-                        return
-                    }
-
-                    try data.write(to: fileURL)
-                    continuation.resume(returning: fileURL)
-                } catch {
-                    continuation.resume(throwing: error)
+    func saveImageToDevice(image: UIImage, completion: @escaping (Error?) -> Void) {
+        PHPhotoLibrary.requestAuthorization { status in
+            if status == .authorized || status == .limited {
+                DispatchQueue.main.async {
+                    UIImageWriteToSavedPhotosAlbum(image, nil, #selector(self.saveCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
+                    completion(nil)
                 }
+            } else {
+                let error = NSError(domain: "PhotoLibrary", code: 1, userInfo: [NSLocalizedDescriptionKey: "Photo Library access is denied."])
+                completion(error)
             }
+        }
+    }
+
+    // MARK: - Save Completion Handler
+    @objc private func saveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            print("Failed to save image: \(error.localizedDescription)")
+        } else {
+            print("Image successfully saved to your Photo Library.")
         }
     }
 
