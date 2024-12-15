@@ -80,6 +80,7 @@
 				EB84AD3D2CD8B0C700B9CA3F /* PhotoPickerView.swift */,
 				EB0E9D522D092A3C00D41170 /* LoadingScreenView.swift */,
 				EB4E13DB2D0E3654000FD206 /* SplashScreenView.swift */,
+				EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -89,7 +90,6 @@
 			children = (
 				EBDD47A82CBC8C59001823C6 /* MainButton.swift */,
 				EB73315C2CC5B0E000680F9F /* HomeLibrary.swift */,
-				EBE857442CC5CF0B00E862B2 /* PlaceHolderImageView.swift */,
 				EB84AD352CD86F5300B9CA3F /* PhotoPicker.swift */,
 			);
 			path = Content;

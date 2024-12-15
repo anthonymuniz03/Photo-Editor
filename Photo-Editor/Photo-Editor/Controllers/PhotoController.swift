@@ -95,7 +95,7 @@ class PhotoController {
         }
     }
 
-]    func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
+    func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(nil)
             return
@@ -175,6 +175,7 @@ class PhotoController {
         return UserDefaults.standard.stringArray(forKey: "trashedCloudImageURLs") ?? []
     }
 }
+
 
 extension UIImage {
     func resized(to targetSize: CGSize) -> UIImage? {

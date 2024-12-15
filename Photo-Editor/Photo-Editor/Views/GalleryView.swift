@@ -29,7 +29,7 @@ struct GalleryView: View {
 
                 VStack {
                     HStack {
-                        Text("Cloud Gallery")
+                        Text("Cloud Save")
                             .font(.headline)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -57,11 +57,22 @@ struct GalleryView: View {
                     .padding([.top, .horizontal], 20)
 
                     if cloudImageURLs.isEmpty {
-                        Spacer()
-                        Text("No images in Cloud Gallery")
-                            .font(.title2)
-                            .foregroundColor(.white.opacity(0.7))
-                        Spacer()
+                        VStack(spacing: 10) {
+                            Spacer()
+
+                            Text("Don't worry!")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white.opacity(0.9))
+
+                            Text("If you ever accidentally delete an image or clear your cache, a copy will be saved here in the cloud!")
+                                .font(.headline)
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.white.opacity(0.7))
+                                .padding(.horizontal, 30)
+
+                            Spacer()
+                        }
                     } else {
                         ScrollView {
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
@@ -151,6 +162,8 @@ struct GalleryView: View {
     }
 }
 
+// MARK: - CloudImageView
+
 struct CloudImageView: View {
     let urlString: String
     let onImageTap: (UIImage) -> Void
@@ -180,6 +193,8 @@ struct CloudImageView: View {
         }
     }
 
+    // MARK: - Load Image Function
+
     private func loadImage() {
         guard let url = URL(string: urlString) else { return }
         Task {
@@ -194,6 +209,8 @@ struct CloudImageView: View {
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     GalleryView(recentImages: .constant([]), trashedCloudImageURLs: .constant([]))
