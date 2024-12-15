@@ -10,6 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var recentImages: [UIImage] = []
     @State private var trashedImages: [UIImage] = []
+    @Binding var cloudImageURLs: [String]
+    @Binding var trashedCloudImageURLs: [String]
     @State private var isLoading = false
 
     var body: some View {
@@ -23,19 +25,20 @@ struct ContentView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
-
-                GalleryView()
-                    .tabItem {
-                        Label("Gallery", systemImage: "photo")
-                    }
-
+                
                 TrashView(
                     trashedImages: $trashedImages,
-                    recentImages: $recentImages
+                    recentImages: $recentImages,
+                    trashedCloudImageURLs: $trashedCloudImageURLs
                 )
                 .tabItem {
                     Label("Trash", systemImage: "trash")
                 }
+                
+                CloudinaryImageView()
+                    .tabItem {
+                        Label("Cloud", systemImage: "cloud")
+                    }
 
                 SettingsView()
                     .tabItem {
@@ -43,15 +46,17 @@ struct ContentView: View {
                     }
             }
 
-            // Full-screen loading overlay
             if isLoading {
                 LoadingScreenView()
-                    .ignoresSafeArea(.all) // Ensures it covers the entire screen
+                    .ignoresSafeArea(.all)
             }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(
+        cloudImageURLs: .constant([]),
+        trashedCloudImageURLs: .constant([])
+    )
 }

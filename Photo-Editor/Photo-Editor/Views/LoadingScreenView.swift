@@ -12,7 +12,6 @@ struct LoadingScreenView: View {
 
     var body: some View {
         ZStack {
-            // Solid background to cover everything
             Color.white
                 .edgesIgnoringSafeArea(.all)
 

@@ -16,37 +16,77 @@ struct HomeLibrary: View {
     var onImageDelete: (UIImage) -> Void
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(0..<15, id: \.self) { index in
-                if index < recentImages.count {
-                    Image(uiImage: recentImages[index])
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 100, height: 100)
-                        .cornerRadius(10)
-                        .clipped()
-                        .onTapGesture {
-                            onImageTap(recentImages[index])
-                        }
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                onImageDelete(recentImages[index])
-                            } label: {
-                                Label("Move to Trash", systemImage: "trash")
+        if recentImages.isEmpty {
+            emptyStateView
+        } else {
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(recentImages, id: \.self) { image in
+                    if let thumbnail = generateThumbnail(from: image, targetSize: CGSize(width: 100, height: 100)) {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .cornerRadius(10)
+                            .clipped()
+                            .onTapGesture {
+                                onImageTap(image)
                             }
-                        }
-                } else {
-                    PlaceHolderImageView()
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    onImageDelete(image)
+                                } label: {
+                                    Label("Move to Trash", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
             }
+            .padding()
         }
-        .padding()
+    }
+
+    func generateThumbnail(from image: UIImage, targetSize: CGSize) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 10) {
+            Spacer()
+
+            Text("Let's get started")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.white.opacity(0.9))
+
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    Text("•")
+                    Text("Tap the large button")
+                }
+                HStack {
+                    Text("•")
+                    Text("Pick a picture")
+                }
+                HStack {
+                    Text("•")
+                    Text("Create")
+                }
+            }
+            .font(.headline)
+            .foregroundColor(.white.opacity(0.7))
+            .padding(.top, 5)
+
+            Spacer()
+        }
     }
 }
 
 #Preview {
     HomeLibrary(
-        recentImages: [UIImage(named: "placeholder")!],
+        recentImages: [],
         onImageTap: { _ in },
         onImageDelete: { _ in }
     )

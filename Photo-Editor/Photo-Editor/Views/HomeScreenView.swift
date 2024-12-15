@@ -12,7 +12,6 @@ struct HomeScreenView: View {
     @Binding var trashedImages: [UIImage]
     @Binding var isLoading: Bool
     @State private var selectedImage: UIImage?
-    @State private var isEditImageViewActive = false
     @State private var refreshID = UUID()
 
     private let photoController = PhotoController()
@@ -26,12 +25,28 @@ struct HomeScreenView: View {
                     .ignoresSafeArea()
 
                 VStack {
+                    HStack {
+                        Text("Choose an image")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 20)
+                            .background(
+                                Capsule()
+                                    .fill(Color.white.opacity(0.3))
+                            )
+
+                        Spacer()
+                    }
+                    .padding([.top, .horizontal], 20)
+
                     ScrollView {
                         VStack {
                             MainButton(
                                 recentImages: $recentImages,
                                 selectedImage: $selectedImage,
-                                isEditImageViewActive: $isEditImageViewActive,
+                                isEditImageViewActive: .constant(false),
                                 onImageSelected: { image in
                                     showLoadingAndNavigate(image: image)
                                 }
@@ -45,7 +60,6 @@ struct HomeScreenView: View {
                             recentImages: recentImages,
                             onImageTap: { image in
                                 selectedImage = image
-                                isEditImageViewActive = true
                             },
                             onImageDelete: { image in
                                 moveImageToTrash(image: image)
@@ -53,32 +67,42 @@ struct HomeScreenView: View {
                         )
                         .id(refreshID)
                     }
-                    .navigationTitle("Choose an image")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .navigationDestination(isPresented: $isEditImageViewActive) {
-                        EditImageView(
-                            image: selectedImage ?? UIImage(),
-                            onSave: { imageOrUrl in
-                                Task {
-                                    if let urlString = imageOrUrl as? String {
-                                        if let downloadedImage = await photoController.downloadImage(from: urlString) {
-                                            await saveImageToLibrary(image: downloadedImage)
-                                        }
-                                        loadImages()
-                                    } else if let image = imageOrUrl as? UIImage {
-                                        await saveImageToLibrary(image: image)
-                                        loadImages()
-                                    }
-                                }
-                            },
-                            isLoading: $isLoading
-                        )
-                    }
                 }
 
                 if isLoading {
                     LoadingScreenView()
                         .zIndex(1)
+                }
+            }
+            .navigationDestination(isPresented: Binding(
+                get: { selectedImage != nil },
+                set: { isPresented in if !isPresented { selectedImage = nil } }
+            )) {
+                if let image = selectedImage {
+                    EditImageView(
+                        image: image,
+                        onSave: { imageOrUrl in
+                            Task {
+                                if let urlString = imageOrUrl as? String {
+                                    if let downloadedImage = await photoController.downloadImage(from: urlString) {
+                                        await MainActor.run {
+                                            recentImages.append(downloadedImage) // Save the edited image, not the original
+                                            photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                                        }
+                                        loadImages()
+                                    }
+                                } else if let editedImage = imageOrUrl as? UIImage {
+                                    await MainActor.run {
+                                        recentImages.append(editedImage) // Save the edited image
+                                        photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                                    }
+                                    loadImages()
+                                }
+                            }
+                        },
+                        isLoading: $isLoading
+                    )
+
                 }
             }
             .toolbarBackground(.clear, for: .navigationBar)
@@ -95,27 +119,30 @@ struct HomeScreenView: View {
             try await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run {
                 selectedImage = image
-                isEditImageViewActive = true
+                print("Selected Image: \(selectedImage != nil ? "Image set" : "Image not set")")
                 isLoading = false
             }
         }
     }
 
     func saveImageToLibrary(image: UIImage) async {
-        do {
-            print("Starting to save image...")
-            let savedPath = try await photoController.saveImageToDevice(image: image)
-            print("Image saved at: \(savedPath)")
+        print("Starting to save image...")
 
-            await MainActor.run {
-                recentImages.append(image)
-                refreshID = UUID()
-                photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
-                print("Image saved and added to recentImages.")
-                print("Current recentImages count: \(recentImages.count)")
+        photoController.saveImageToDevice(image: image) { error in
+            if let error = error {
+                print("Failed to save image: \(error.localizedDescription)")
+            } else {
+                print("Image saved successfully!")
+
+                Task {
+                    await MainActor.run {
+                        recentImages.append(image)
+                        photoController.saveImagePaths(images: recentImages, key: "recentImagePaths")
+                        print("Image saved and added to recent images.")
+                        print("Current recent images count: \(recentImages.count)")
+                    }
+                }
             }
-        } catch {
-            print("Failed to save image: \(error.localizedDescription)")
         }
     }
 
