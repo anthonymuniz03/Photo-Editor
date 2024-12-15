@@ -96,6 +96,12 @@ struct EditImageView: View {
             }
             .padding()
         }
+        .alert("Saved to library", isPresented: $showSaveConfirmation) {
+            Button("OK") {
+                dismiss()
+            }
+        }
+
         .sheet(isPresented: $showFilterDrawer) {
             FilterSelectionView(currentImage: originalImage, selectedFilter: $selectedFilter) { filter in
                 applyFilterAndRotation(filter)
