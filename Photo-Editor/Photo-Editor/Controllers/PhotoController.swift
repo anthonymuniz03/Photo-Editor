@@ -96,7 +96,8 @@ class PhotoController {
     }
 
     func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        guard let resizedImage = image.resized(to: CGSize(width: 800, height: 800)),
+              let imageData = resizedImage.jpegData(compressionQuality: 0.8) else {
             completion(nil)
             return
         }

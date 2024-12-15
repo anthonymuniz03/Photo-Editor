@@ -67,8 +67,6 @@ struct GalleryView: View {
         }
     }
 
-    // MARK: - Header View
-
     private var headerView: some View {
         HStack {
             Text("Cloud Save")
@@ -97,8 +95,6 @@ struct GalleryView: View {
         .padding([.top, .horizontal], 20)
     }
 
-    // MARK: - Empty State View
-
     private var emptyStateView: some View {
         VStack(spacing: 10) {
             Spacer()
@@ -115,18 +111,18 @@ struct GalleryView: View {
         }
     }
 
-    // MARK: - Gallery Grid View
-
     private var galleryGridView: some View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                 ForEach(cloudImageURLs, id: \.self) { urlString in
-                    CloudImageView(urlString: urlString) { image in
-                        if let resizedImage = image.resized(to: CGSize(width: 800, height: 800)) {
-                            selectedImage = resizedImage
-                            showEditView = true
-                        } else {
-                            error = ErrorWrapper(message: "Failed to download image.")
+                    CloudImageView(urlString: urlString) { thumbnail in
+                        Task {
+                            if let fullImage = await photoController.downloadImage(from: urlString) {
+                                selectedImage = fullImage
+                                showEditView = true
+                            } else {
+                                error = ErrorWrapper(message: "Failed to download full-size image.")
+                            }
                         }
                     }
                     .contextMenu {
@@ -137,6 +133,7 @@ struct GalleryView: View {
                         }
                     }
                 }
+
             }
             .padding()
             .refreshable {
@@ -145,13 +142,9 @@ struct GalleryView: View {
         }
     }
 
-    // MARK: - Load Cloud Images
-
     func loadCloudImages() {
         cloudImageURLs = photoController.loadCloudImageURLs(page: currentPage, pageSize: pageSize)
     }
-
-    // MARK: - Refresh Gallery
 
     func refreshGallery() {
         isRefreshing = true
@@ -160,8 +153,6 @@ struct GalleryView: View {
             isRefreshing = false
         }
     }
-
-    // MARK: - Delete Cloud Image
 
     func deleteCloudImage(urlString: String) {
         isLoading = true
@@ -174,8 +165,6 @@ struct GalleryView: View {
             isLoading = false
         }
     }
-
-    // MARK: - Handle Save
 
     func handleSave(imageOrUrl: Any) {
         if let urlString = imageOrUrl as? String {
@@ -196,9 +185,6 @@ struct GalleryView: View {
         isLoading = false
     }
 
-
-    // MARK: - Save Image to Library
-
     func saveImageToLibrary(image: UIImage) async {
         photoController.saveImageToDevice(image: image) { saveError in
             if let saveError = saveError {
@@ -216,9 +202,6 @@ struct GalleryView: View {
     }
 
 }
-
-
-// MARK: - CloudImageView
 
 struct CloudImageView: View {
     let urlString: String
@@ -249,15 +232,15 @@ struct CloudImageView: View {
         }
     }
 
-    // MARK: - Load Image Function
-
     private func loadImage() {
         guard let url = URL(string: urlString) else { return }
         Task {
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
-                await MainActor.run {
-                    self.imageData = data
+                if let image = UIImage(data: data)?.resized(to: CGSize(width: 100, height: 100)) {
+                    await MainActor.run {
+                        self.imageData = image.jpegData(compressionQuality: 0.7)
+                    }
                 }
             } catch {
                 print("Error loading image: \(error)")
@@ -270,8 +253,6 @@ struct ErrorWrapper: Identifiable {
     let id = UUID()
     let message: String
 }
-
-// MARK: - Preview
 
 #Preview {
     GalleryView(recentImages: .constant([]), trashedCloudImageURLs: .constant([]))
