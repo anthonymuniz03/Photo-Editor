@@ -25,15 +25,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
-
-                GalleryView(
-                    recentImages: $recentImages,
-                    trashedCloudImageURLs: $trashedCloudImageURLs
-                )
-                .tabItem {
-                    Label("Gallery", systemImage: "photo")
-                }
-
+                
                 TrashView(
                     trashedImages: $trashedImages,
                     recentImages: $recentImages,
@@ -42,6 +34,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("Trash", systemImage: "trash")
                 }
+                
+                CloudinaryImageView()
+                    .tabItem {
+                        Label("Cloud", systemImage: "cloud")
+                    }
 
                 SettingsView()
                     .tabItem {

@@ -33,61 +33,68 @@ struct EditImageView: View {
     }
 
     var body: some View {
-        VStack {
-            HStack(spacing: 40) {
-                Button(action: rotateImageLeft) {
-                    Image(systemName: "arrow.counterclockwise.circle.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.blue)
-                }
-
-                Button(action: rotateImageRight) {
-                    Image(systemName: "arrow.clockwise.circle.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.blue)
-                }
-            }
-            .padding()
-
-            Image(uiImage: image)
+        ZStack {
+            Image("backedit")
                 .resizable()
-                .scaledToFit()
-                .id(imageID)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .scaledToFill()
+                .ignoresSafeArea()
+
+            VStack {
+                HStack(spacing: 40) {
+                    Button(action: rotateImageLeft) {
+                        Image(systemName: "arrow.counterclockwise.circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.blue)
+                    }
+
+                    Button(action: rotateImageRight) {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.blue)
+                    }
+                }
                 .padding()
 
-            HStack(spacing: 20) {
-                Button("Select Filter") {
-                    showFilterDrawer.toggle()
-                }
-                .buttonStyle(.borderedProminent)
-            }
-            .padding()
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .id(imageID)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
 
-            HStack {
-                Button(action: uploadImageToCloudinary) {
-                    Text("Upload and Save")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(8)
+                HStack(spacing: 20) {
+                    Button("Select Filter") {
+                        showFilterDrawer.toggle()
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .disabled(isLoading)
+                .padding()
 
-                Button(action: saveImageToDevice) {
-                    Text("Save to Device")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.green)
-                        .cornerRadius(8)
+                HStack {
+                    Button(action: uploadImageToCloudinary) {
+                        Text("Upload and Save")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
+                    .disabled(isLoading)
+
+                    Button(action: saveImageToDevice) {
+                        Text("Save to Device")
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                    }
+                    .disabled(isLoading)
                 }
-                .disabled(isLoading)
+                .padding()
             }
-            .padding()
         }
         .alert("Saved to library", isPresented: $showSaveConfirmation) {
             Button("OK") {
@@ -170,7 +177,7 @@ struct EditImageView: View {
                     uploadStatusMessage = "Failed to save image: \(error.localizedDescription)"
                     showErrorAlert = true
                 } else {
-                    uploadStatusMessage = "Image successfully saved to your Photo Library."
+                     uploadStatusMessage = "Image successfully saved to your Photo Library."
                     showSaveConfirmation = true
                 }
             }
