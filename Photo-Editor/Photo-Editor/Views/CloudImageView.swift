@@ -57,7 +57,6 @@ struct CloudImageView: View {
         }
     }
 
-    // Helper function to generate a thumbnail
     func generateThumbnail(from image: UIImage, targetSize: CGSize) -> UIImage? {
         let renderer = UIGraphicsImageRenderer(size: targetSize)
         return renderer.image { _ in
