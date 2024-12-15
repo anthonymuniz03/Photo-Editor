@@ -96,8 +96,7 @@ class PhotoController {
     }
 
     func uploadImageToCloudinary(image: UIImage, completion: @escaping (String?) -> Void) {
-        guard let resizedImage = image.resized(to: CGSize(width: 800, height: 800)),
-              let imageData = resizedImage.jpegData(compressionQuality: 0.8) else {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(nil)
             return
         }
@@ -143,6 +142,7 @@ class PhotoController {
             completion(urlString)
         }.resume()
     }
+
 
     func loadCloudImageURLs(page: Int, pageSize: Int) -> [String] {
         let allImageURLs = UserDefaults.standard.stringArray(forKey: "cloudImageURLs") ?? []

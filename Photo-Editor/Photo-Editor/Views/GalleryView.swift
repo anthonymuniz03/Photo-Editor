@@ -207,11 +207,12 @@ struct CloudImageView: View {
     let urlString: String
     let onImageTap: (UIImage) -> Void
 
-    @State private var imageData: Data?
+    @State private var thumbnailData: Data?
+    @State private var fullImage: UIImage?
 
     var body: some View {
         ZStack {
-            if let data = imageData, let uiImage = UIImage(data: data) {
+            if let data = thumbnailData, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
@@ -219,7 +220,9 @@ struct CloudImageView: View {
                     .cornerRadius(10)
                     .clipped()
                     .onTapGesture {
-                        onImageTap(uiImage)
+                        if let fullImage = fullImage {
+                            onImageTap(fullImage)
+                        }
                     }
             } else {
                 PlaceHolderImageView()
@@ -237,9 +240,11 @@ struct CloudImageView: View {
         Task {
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
-                if let image = UIImage(data: data)?.resized(to: CGSize(width: 100, height: 100)) {
+                if let image = UIImage(data: data) {
+                    let thumbnail = generateThumbnail(from: image, targetSize: CGSize(width: 100, height: 100))
                     await MainActor.run {
-                        self.imageData = image.jpegData(compressionQuality: 0.7)
+                        self.thumbnailData = thumbnail?.jpegData(compressionQuality: 0.7)
+                        self.fullImage = image
                     }
                 }
             } catch {
@@ -247,7 +252,16 @@ struct CloudImageView: View {
             }
         }
     }
+
+    // Helper function to generate a thumbnail
+    func generateThumbnail(from image: UIImage, targetSize: CGSize) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+    }
 }
+
 
 struct ErrorWrapper: Identifiable {
     let id = UUID()
