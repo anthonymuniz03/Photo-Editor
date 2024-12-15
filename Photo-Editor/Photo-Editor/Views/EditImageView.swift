@@ -1,4 +1,4 @@
-//
+////
 //  EditImageView.swift
 //  Photo-Editor
 //
@@ -22,14 +22,18 @@ struct EditImageView: View {
     @State private var inputText: String = ""
     @State private var originalImage: UIImage
     @State private var selectedFilter: FilterType = .original
+    @State private var rotationAngle: CGFloat = 0
+    @State private var currentFilteredImage: UIImage
     @Environment(\.dismiss) var dismiss
 
     init(image: UIImage, onSave: @escaping (Any) -> Void, isLoading: Binding<Bool>) {
         _image = State(initialValue: image)
         _originalImage = State(initialValue: image)
+        _currentFilteredImage = State(initialValue: image)
         _isLoading = isLoading
         self.onSave = onSave
     }
+
 
     var body: some View {
         VStack {
@@ -92,60 +96,31 @@ struct EditImageView: View {
             }
             .padding()
         }
-        .alert("Image Saved!", isPresented: $showSaveConfirmation) {
-            Button("OK", role: .cancel) {}
-        }
-        .alert("Failed to Save Image", isPresented: $showErrorAlert) {
-            Button("OK", role: .cancel) {}
-        }
-        .textFieldAlert(isPresented: $showTextInput, title: "Enter Text", text: $inputText, onConfirm: applyTextOverlay)
-        .navigationTitle("Edit Image")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(isLoading)
         .sheet(isPresented: $showFilterDrawer) {
-            FilterSelectionView(originalImage: originalImage, selectedFilter: $selectedFilter) { selectedImage in
-                image = selectedImage
+            FilterSelectionView(currentImage: originalImage, selectedFilter: $selectedFilter) { filter in
+                applyFilterAndRotation(filter)
             }
             .presentationDetents([.fraction(0.3)])
             .presentationDragIndicator(.visible)
         }
     }
 
-    func applyTextOverlay() {
-        let renderer = UIGraphicsImageRenderer(size: image.size)
-        let newImage = renderer.image { context in
-            image.draw(at: .zero)
-
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.alignment = .center
-
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 50),
-                .foregroundColor: UIColor.white,
-                .paragraphStyle: paragraphStyle
-            ]
-
-            let textSize = inputText.size(withAttributes: attributes)
-            let textRect = CGRect(
-                x: (image.size.width - textSize.width) / 2,
-                y: (image.size.height - textSize.height) / 2,
-                width: textSize.width,
-                height: textSize.height
-            )
-
-            inputText.draw(in: textRect, withAttributes: attributes)
-        }
-
-        image = newImage
-    }
-
     func rotateImageLeft() {
-        rotateImage(by: -90)
+        rotationAngle -= 90
+        rotationAngle = rotationAngle.truncatingRemainder(dividingBy: 360)
+        applyRotation()
     }
 
     func rotateImageRight() {
-        rotateImage(by: 90)
+        rotationAngle += 90
+        rotationAngle = rotationAngle.truncatingRemainder(dividingBy: 360)
+        applyRotation()
     }
+
+
+
+
+
 
     func rotateImage(by degrees: CGFloat) {
         let radians = degrees * (.pi / 180)
@@ -162,6 +137,7 @@ struct EditImageView: View {
         image = rotatedImage
     }
 
+    
     private func uploadImageToCloudinary() {
         isLoading = true
         uploadStatusMessage = "Uploading to Cloudinary..."
@@ -180,7 +156,7 @@ struct EditImageView: View {
             }
         }
     }
-
+    
     private func saveImageToDevice() {
         PHPhotoLibrary.requestAuthorization { status in
             if status == .authorized || status == .limited {
@@ -193,16 +169,72 @@ struct EditImageView: View {
             }
         }
     }
+
+    func applyFilterAndRotation(_ filter: FilterType) {
+        switch filter {
+        case .original:
+            currentFilteredImage = originalImage
+        case .cold:
+            currentFilteredImage = applyTemperatureFilter(to: originalImage, temperature: 4500)
+        case .warm:
+            currentFilteredImage = applyTemperatureFilter(to: originalImage, temperature: 8500)
+        }
+        applyRotation()
+    }
+
+
+
+    
+    func applyTemperatureFilter(to inputImage: UIImage, temperature: CGFloat) -> UIImage {
+        let ciContext = CIContext()
+        let ciImage = CIImage(image: inputImage)!
+        let filter = CIFilter.temperatureAndTint()
+        filter.inputImage = ciImage
+        filter.neutral = CIVector(x: temperature, y: 0)
+
+        if let outputImage = filter.outputImage,
+           let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent) {
+            return UIImage(cgImage: cgImage)
+        }
+
+        return inputImage
+    }
+    
+    func applyRotation() {
+        let radians = rotationAngle * (.pi / 180)
+        let newSize = CGSize(
+            width: abs(cos(radians)) * currentFilteredImage.size.width + abs(sin(radians)) * currentFilteredImage.size.height,
+            height: abs(sin(radians)) * currentFilteredImage.size.width + abs(cos(radians)) * currentFilteredImage.size.height
+        )
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+
+        let rotatedImage = renderer.image { context in
+            context.cgContext.translateBy(x: newSize.width / 2, y: newSize.height / 2)
+            context.cgContext.rotate(by: radians)
+            context.cgContext.translateBy(x: -currentFilteredImage.size.width / 2, y: -currentFilteredImage.size.height / 2)
+            currentFilteredImage.draw(at: .zero)
+        }
+
+        image = rotatedImage
+    }
+
+
+
+
 }
+
+// MARK: - FilterType Enum
 
 enum FilterType {
     case original, cold, warm
 }
 
+
 struct FilterSelectionView: View {
-    let originalImage: UIImage
+    let currentImage: UIImage
     @Binding var selectedFilter: FilterType
-    var onSelect: (UIImage) -> Void
+    var onSelect: (FilterType) -> Void
 
     var body: some View {
         VStack {
@@ -211,41 +243,35 @@ struct FilterSelectionView: View {
                 .padding()
 
             HStack(spacing: 20) {
-                filterButton(for: .original, label: "Original", image: originalImage)
-                filterButton(for: .cold, label: "Cold", image: applyFilter(to: originalImage, temperature: 4500))
-                filterButton(for: .warm, label: "Warm", image: applyFilter(to: originalImage, temperature: 8500))
+                filterButton(for: .original, label: "Original", color: Color.gray)
+                filterButton(for: .cold, label: "Cold", color: Color.blue)
+                filterButton(for: .warm, label: "Warm", color: Color.orange)
             }
             .padding()
         }
     }
 
-    func filterButton(for filter: FilterType, label: String, image: UIImage) -> some View {
-        Image(uiImage: image)
-            .resizable()
-            .frame(width: selectedFilter == filter ? 100 : 80, height: selectedFilter == filter ? 100 : 80)
-            .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(selectedFilter == filter ? Color.white : Color.clear, lineWidth: 3)
-            )
-            .onTapGesture {
-                selectedFilter = filter
-                onSelect(image)
-            }
-            .padding(.horizontal, 5)
-    }
-
-    func applyFilter(to image: UIImage, temperature: CGFloat) -> UIImage {
-        let context = CIContext()
-        let ciImage = CIImage(image: image)!
-        let filter = CIFilter.temperatureAndTint()
-        filter.inputImage = ciImage
-        filter.neutral = CIVector(x: temperature, y: 0)
-        let outputImage = filter.outputImage!
-        let cgImage = context.createCGImage(outputImage, from: outputImage.extent)!
-        return UIImage(cgImage: cgImage)
+    func filterButton(for filter: FilterType, label: String, color: Color) -> some View {
+        VStack {
+            color
+                .frame(width: selectedFilter == filter ? 100 : 80, height: selectedFilter == filter ? 100 : 80)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(selectedFilter == filter ? Color.white : Color.clear, lineWidth: 3)
+                )
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.white)
+        }
+        .onTapGesture {
+            selectedFilter = filter
+            onSelect(filter)
+        }
     }
 }
+
+
 
 
 struct FilterPreview: View {
