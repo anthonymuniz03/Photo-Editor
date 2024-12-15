@@ -24,7 +24,6 @@ class PhotoController {
         }
     }
 
-    // MARK: - Save Completion Handler
     @objc private func saveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         if let error = error {
             print("Failed to save image: \(error.localizedDescription)")
