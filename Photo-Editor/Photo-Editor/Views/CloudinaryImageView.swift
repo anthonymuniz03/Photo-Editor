@@ -52,8 +52,6 @@ struct CloudinaryImageView: View {
             }
             .alert("Image Saved", isPresented: $showSaveConfirmation) {
                 Button("OK", role: .cancel) { }
-            } message: {
-                Text("The image has been saved to your Photo Library.")
             }
             .alert("Save Error", isPresented: Binding<Bool>(
                 get: { saveErrorMessage != nil },
@@ -105,6 +103,7 @@ struct CloudinaryImageView: View {
                         switch phase {
                         case .empty:
                             ProgressView()
+                                .frame(width: 100, height: 100)
                         case .success(let image):
                             image
                                 .resizable()
@@ -119,16 +118,22 @@ struct CloudinaryImageView: View {
                                         Label("Save to Device", systemImage: "arrow.down.to.line")
                                     }
                                 }
-                        case .failure:
+                        case .failure(let error):
                             Image(systemName: "photo")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 100, height: 100)
                                 .foregroundColor(.gray)
+                            Text("Error: \(error.localizedDescription)")
+                                .font(.caption)
+                                .foregroundColor(.red)
                         @unknown default:
                             EmptyView()
                         }
                     }
+                    .frame(width: 100, height: 100)
+                    .background(Color.black.opacity(0.1))
+                    .cornerRadius(8)
                 }
             }
             .padding()
@@ -144,7 +149,7 @@ struct CloudinaryImageView: View {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, error in
+        URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
                     saveErrorMessage = "Download error: \(error.localizedDescription)"
@@ -174,18 +179,6 @@ struct CloudinaryImageView: View {
         }.resume()
     }
 
-
-
-    private func saveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        DispatchQueue.main.async {
-            if let error = error {
-                saveErrorMessage = "Save error: \(error.localizedDescription)"
-            } else {
-                showSaveConfirmation = true
-            }
-        }
-    }
-
     func fetchImageUrls() {
         isLoading = true
         errorMessage = nil
@@ -212,6 +205,16 @@ struct CloudinaryImageView: View {
                 isLoading = false
                 if let error = error {
                     errorMessage = "Error fetching images: \(error.localizedDescription)"
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    errorMessage = "Invalid response from server."
+                    return
+                }
+
+                if !(200...299).contains(httpResponse.statusCode) {
+                    errorMessage = "Server returned error code \(httpResponse.statusCode)."
                     return
                 }
 
